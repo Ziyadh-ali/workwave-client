@@ -8,7 +8,7 @@ const EmployeeLoginPage = () => {
         <div className="hidden md:block w-1/2 bg-blue-200 p-8">
           <div className="w-full h-full flex items-center justify-center">
             <img
-              src="https://res.cloudinary.com/dr0iflvfs/image/upload/v1749107016/user_profiles/gajhcaog7qqolcvqlecs.png"
+              src="https://res.cloudinary.com/dr0iflvfs/image/upload/v1742613206/video-conference-theme-multiracial-business-600nw-1932607703_k7jyyg.webp"
               alt="Office illustration"
               className="object-cover"
             />
