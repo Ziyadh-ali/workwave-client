@@ -475,12 +475,10 @@ export const SocketProvider = ({ children, userId }: { children: React.ReactNode
         time: string;
     }) => {
         return new Promise<void>((resolve, reject) => {
-            alert("hrllo")
             if (!socketInstance) {
                 reject(new Error('Socket not connected'));
                 return;
             }
-            alert("hoooi")
             socketInstance.emit('meetingScheduled', data, (response: { success: boolean }) => {
                 if (response.success) {
                     resolve();

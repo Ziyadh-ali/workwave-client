@@ -74,14 +74,14 @@ function AdminDashBoard() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="text-sm text-gray-600">Attendance</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold text-gray-800">5%</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Detail Cards */}
@@ -134,7 +134,7 @@ function AdminDashBoard() {
                   <p className="text-sm font-medium text-gray-800">March 2025</p>
                   <p className="text-xs text-gray-600">Processing</p>
                 </div>
-                <span className="text-sm font-medium text-gray-800">$48,000</span>
+                <span className="text-sm font-medium text-gray-800">₹48,000</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -142,7 +142,7 @@ function AdminDashBoard() {
                   <p className="text-sm font-medium text-gray-800">February 2025</p>
                   <p className="text-xs text-gray-600">Completed</p>
                 </div>
-                <span className="text-sm font-medium text-gray-800">$48,000</span>
+                <span className="text-sm font-medium text-gray-800">₹48,000</span>
               </div>
             </CardContent>
           </Card>
@@ -156,14 +156,14 @@ function AdminDashBoard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-800">90 Employees</p>
+                <p className="text-sm font-medium text-gray-800">4 Employees</p>
                 <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
                   Present
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-800">10 Employees</p>
+                <p className="text-sm font-medium text-gray-800">3 Employees</p>
                 <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
                   Absent
                 </span>
