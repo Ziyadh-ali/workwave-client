@@ -113,7 +113,7 @@ function App() {
 
               <Route path="payroll" element={<PayrollManagementPage />} />
 
-              <Route path="report" element={<PayrollReport />} />
+              <Route path="reports" element={<PayrollReport />} />
 
             </Route>
 
