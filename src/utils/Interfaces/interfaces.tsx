@@ -87,6 +87,10 @@ export interface IPayroll {
     year: number;
     presentDays: number;
     workingDays: number;
+    taxDeduction: number;
+    pfDeduction: number;
+    totalDeduction: number;
+    lossOfPayDeduction: number;
     baseSalary: number;
     netSalary: number;
     status: "Pending" | "Paid";

@@ -30,6 +30,7 @@ import PayslipPage from "./pages/employee/employeePages/PayslipPage"
 import { SocketProvider } from "./context/SocketContext";
 import { useSelector } from "react-redux"
 import { RootState } from "./store/store"
+import PayrollReport from "./pages/admin/adminPages/AdminReportPage"
 
 function App() {
   const { employee } = useSelector((state: RootState) => state.employee);
@@ -111,6 +112,8 @@ function App() {
               <Route path="attendance/summary" element={<MonthlyAttendanceSummaryPage />} />
 
               <Route path="payroll" element={<PayrollManagementPage />} />
+
+              <Route path="report" element={<PayrollReport />} />
 
             </Route>
 
