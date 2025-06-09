@@ -170,27 +170,27 @@ const PayrollReport: React.FC = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Total Base Salary</p>
-                                        <p className="text-lg font-semibold">${summary.totalBaseSalary.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalBaseSalary.toFixed(2)}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Total Net Salary</p>
-                                        <p className="text-lg font-semibold">${summary.totalNetSalary.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalNetSalary.toFixed(2)}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Total Deductions</p>
-                                        <p className="text-lg font-semibold">${summary.totalDeductions.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalDeductions.toFixed(2)}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Tax Deducted</p>
-                                        <p className="text-lg font-semibold">${summary.totalTax.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalTax.toFixed(2)}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">PF Deducted</p>
-                                        <p className="text-lg font-semibold">${summary.totalPF.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalPF.toFixed(2)}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-muted-foreground">Loss of Pay</p>
-                                        <p className="text-lg font-semibold">${summary.totalLossOfPay.toFixed(2)}</p>
+                                        <p className="text-lg font-semibold">₹{summary.totalLossOfPay.toFixed(2)}</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -239,12 +239,12 @@ const PayrollReport: React.FC = () => {
                                                         <TableCell>{payroll.employeeId?._id || "N/A"}</TableCell>
                                                         <TableCell>{payroll.workingDays}</TableCell>
                                                         <TableCell>{payroll.presentDays}</TableCell>
-                                                        <TableCell>${payroll.baseSalary.toFixed(2)}</TableCell>
-                                                        <TableCell>${payroll.taxDeduction.toFixed(2)}</TableCell>
-                                                        <TableCell>${payroll.pfDeduction.toFixed(2)}</TableCell>
-                                                        <TableCell>${payroll.lossOfPayDeduction.toFixed(2)}</TableCell>
-                                                        <TableCell>${payroll.totalDeduction.toFixed(2)}</TableCell>
-                                                        <TableCell className="font-semibold">${payroll.netSalary.toFixed(2)}</TableCell>
+                                                        <TableCell>₹{payroll.baseSalary.toFixed(2)}</TableCell>
+                                                        <TableCell>₹{payroll.taxDeduction.toFixed(2)}</TableCell>
+                                                        <TableCell>₹{payroll.pfDeduction.toFixed(2)}</TableCell>
+                                                        <TableCell>₹{payroll.lossOfPayDeduction.toFixed(2)}</TableCell>
+                                                        <TableCell>₹{payroll.totalDeduction.toFixed(2)}</TableCell>
+                                                        <TableCell className="font-semibold">₹{payroll.netSalary.toFixed(2)}</TableCell>
                                                         <TableCell>
                                                             <Badge variant={payroll.status === "Paid" ? "default" : "destructive"}>
                                                                 {payroll.status}

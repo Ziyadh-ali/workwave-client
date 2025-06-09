@@ -5,17 +5,23 @@ import {
   CardTitle,
   CardContent
 } from "../../../components/ui/card";
-import { downloadPayslipService, getEmployeePayslipsService } from "../../../services/user/userService";
+import {
+  downloadPayslipService,
+  getEmployeePayslipsService
+} from "../../../services/user/userService";
 import { Badge } from "../../../components/ui/badge";
 import { format } from "date-fns";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { Header } from "../../../components/HeaderComponent";
 import Sidebar from "../../../components/SidebarComponent";
 import { IPayslip } from "../../../utils/Interfaces/interfaces";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 
 const PayslipPage = () => {
   const [payslips, setPayslips] = useState<IPayslip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPayslip, setSelectedPayslip] = useState<IPayslip | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem("employeeSession") || "{}");
 
   useEffect(() => {
@@ -42,14 +48,14 @@ const PayslipPage = () => {
     try {
       const blob = await downloadPayslipService(currentUser._id, month, year);
       const url = window.URL.createObjectURL(blob);
-  
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `Payslip_${month}_${year}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-  
+
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download error:", error);
@@ -66,8 +72,13 @@ const PayslipPage = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "INR",
+      currency: "INR"
     }).format(amount);
+  };
+
+  const openModal = (payslip: IPayslip) => {
+    setSelectedPayslip(payslip);
+    setIsModalOpen(true);
   };
 
   return (
@@ -111,9 +122,7 @@ const PayslipPage = () => {
                     <tbody className="text-sm text-gray-800">
                       {payslips.map((p) => (
                         <tr key={p._id} className="border-t">
-                          <td className="p-3">
-                            {getMonthName(p.month)} {p.year}
-                          </td>
+                          <td className="p-3">{getMonthName(p.month)} {p.year}</td>
                           <td className="p-3">{p.workingDays}</td>
                           <td className="p-3">{p.presentDays}</td>
                           <td className="p-3">{formatCurrency(p.baseSalary)}</td>
@@ -126,12 +135,18 @@ const PayslipPage = () => {
                           <td className="p-3">
                             {format(new Date(p.generatedAt), "dd MMM yyyy")}
                           </td>
-                          <td className="p-3">
+                          <td className="p-3 space-x-2">
                             <button
                               onClick={() => handleDownload(p.month, p.year)}
                               className="text-blue-600 hover:underline text-xs"
                             >
                               Download
+                            </button>
+                            <button
+                              onClick={() => openModal(p)}
+                              className="text-indigo-600 hover:underline text-xs"
+                            >
+                              See Details
                             </button>
                           </td>
                         </tr>
@@ -144,6 +159,29 @@ const PayslipPage = () => {
           </Card>
         </div>
       </div>
+
+      {/* Payslip Detail Modal */}
+      {selectedPayslip && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Payslip Details – {getMonthName(selectedPayslip.month)} {selectedPayslip.year}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 text-sm text-gray-800">
+              <p><strong>Working Days:</strong> {selectedPayslip.workingDays}</p>
+              <p><strong>Present Days:</strong> {selectedPayslip.presentDays}</p>
+              <p><strong>Base Salary:</strong> {formatCurrency(selectedPayslip.baseSalary)}</p>
+              <p><strong>Net Salary:</strong> {formatCurrency(selectedPayslip.netSalary)}</p>
+              <p><strong>Tax Deduction:</strong> {formatCurrency(selectedPayslip.taxDeduction)}</p>
+              <p><strong>PF Deduction:</strong> {formatCurrency(selectedPayslip.pfDeduction)}</p>
+              <p><strong>Loss of Pay:</strong> {formatCurrency(selectedPayslip.lossOfPayDeduction)}</p>
+              <p><strong>Total Deductions:</strong> {formatCurrency(selectedPayslip.totalDeduction)}</p>
+              <p><strong>Status:</strong> {selectedPayslip.status}</p>
+              <p><strong>Generated At:</strong> {format(new Date(selectedPayslip.generatedAt), "dd MMM yyyy")}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

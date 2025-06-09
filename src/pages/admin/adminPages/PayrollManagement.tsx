@@ -8,11 +8,11 @@ import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import { useLocation } from "react-router-dom";
 import { IPayroll } from "../../../utils/Interfaces/interfaces";
-import { 
-  getPayrollRecordsService, 
-  updatePayrollStatusService,
-  generatePayrollService,
-  generateBulkPayrollService
+import {
+    getPayrollRecordsService,
+    updatePayrollStatusService,
+    generatePayrollService,
+    generateBulkPayrollService
 } from "../../../services/admin/adminService";
 import GeneratePayrollModal from "../modals/GeneratePayrollModal";
 import { AxiosError } from "axios";
@@ -38,7 +38,7 @@ const PayrollManagementPage = () => {
         };
         fetchPayrolls();
 
-       //eslint-disable-next-line 
+        //eslint-disable-next-line 
     }, [selectedMonth, selectedYear, location]);
 
     const handleMarkAsPaid = async (payrollId: string) => {
@@ -61,7 +61,7 @@ const PayrollManagementPage = () => {
         try {
             let result;
             if (employeeId) {
-                result = await generatePayrollService(selectedMonth, selectedYear, taxPercentage,employeeId);
+                result = await generatePayrollService(selectedMonth, selectedYear, taxPercentage, employeeId);
             } else {
                 result = await generateBulkPayrollService(selectedMonth, selectedYear, taxPercentage);
             }
@@ -84,13 +84,41 @@ const PayrollManagementPage = () => {
             accessor: (row: IPayroll) => row.employeeId.fullName,
         },
         {
+            header: "Role",
+            accessor: (row: IPayroll) => row.employeeId.role,
+        },
+        {
             header: "Month/Year",
             accessor: (row: IPayroll) =>
                 `${new Date(row.year, row.month - 1).toLocaleString('default', { month: 'long' })} ${row.year}`,
         },
         {
+            header: "Working Days",
+            accessor: (row: IPayroll) => row.workingDays,
+        },
+        {
+            header: "Present Days",
+            accessor: (row: IPayroll) => row.presentDays,
+        },
+        {
             header: "Base Salary",
             accessor: (row: IPayroll) => `₹${row.baseSalary.toLocaleString()}`,
+        },
+        {
+            header: "Tax Deduction",
+            accessor: (row: IPayroll) => `₹${row.taxDeduction.toLocaleString()}`,
+        },
+        {
+            header: "PF Deduction",
+            accessor: (row: IPayroll) => `₹${row.pfDeduction.toLocaleString()}`,
+        },
+        {
+            header: "Loss of Pay",
+            accessor: (row: IPayroll) => `₹${row.lossOfPayDeduction.toLocaleString()}`,
+        },
+        {
+            header: "Total Deductions",
+            accessor: (row: IPayroll) => `₹${row.totalDeduction.toLocaleString()}`,
         },
         {
             header: "Net Salary",
@@ -99,18 +127,22 @@ const PayrollManagementPage = () => {
         {
             header: "Status",
             accessor: (row: IPayroll) => (
-                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    row.status === "Pending" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
-                }`}>
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${row.status === "Pending" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
+                    }`}>
                     {row.status}
                 </span>
             ),
         },
         {
+            header: "Generated At",
+            accessor: (row: IPayroll) =>
+                row.generatedAt ? new Date(row.generatedAt).toLocaleDateString() : "-",
+        },
+        {
             header: "Actions",
             accessor: (row: IPayroll) => (
                 <div className="flex space-x-2">
-                    {row.status === "Pending" && (
+                    {row.status === "Pending" ? (
                         <Button
                             size="sm"
                             onClick={() => handleMarkAsPaid(row._id)}
@@ -118,8 +150,7 @@ const PayrollManagementPage = () => {
                         >
                             <CheckCircle size={16} className="mr-1" /> Mark Paid
                         </Button>
-                    )}
-                    {row.status === "Paid" && (
+                    ) : (
                         <Button variant="outline" size="sm" disabled>
                             Paid
                         </Button>
@@ -128,6 +159,7 @@ const PayrollManagementPage = () => {
             ),
         }
     ];
+
 
     return (
         <div className="flex min-h-screen bg-gray-100">
