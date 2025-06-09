@@ -6,22 +6,24 @@ import {
   Calendar,
   DollarSign,
   HelpCircle,
+  ChevronRight,
+  Users,
   // Users,
   // ChevronRight,
   // Folder,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { useState } from "react";
 
 const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
   const { employee } = useSelector((state: RootState) => state.employee || { employee: null });
   // State to manage the visibility of the Employees submenu
-  // const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
+  const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
 
-  // Toggle the Employees submenu
-  // const toggleEmployeesMenu = () => {
-  //   setIsEmployeesOpen(!isEmployeesOpen);
-  // };
+  const toggleEmployeesMenu = () => {
+    setIsEmployeesOpen(!isEmployeesOpen);
+  };
 
   return (
     <div className="w-64 bg-white shadow-md">
@@ -108,7 +110,7 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
             </NavLink>
             {employee?.role && (employee.role === "hr") && (
               <div>
-                {/* <button
+                <button
                   onClick={toggleEmployeesMenu}
                   className={`flex items-center justify-between w-full p-2 rounded-md ${isEmployeesOpen
                     ? "bg-blue-100 text-blue-600"
@@ -123,8 +125,8 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
                     className={`transform transition-transform duration-200 ${isEmployeesOpen ? "rotate-90" : "rotate-0"
                       } w-5 h-5`}
                   />
-                </button> */}
-                {/* {isEmployeesOpen && (
+                </button> 
+                {isEmployeesOpen && (
                   <div className="ml-6 mt-2 space-y-1">
                     <NavLink
                       to="/developers/developers-list"
@@ -150,7 +152,7 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
                       <span className="text-gray-600">•</span>
                       <span>Leave Requests</span>
                     </NavLink>
-                    <NavLink
+                    {/* <NavLink
                       to="/developers/salary"
                       className={({ isActive }) =>
                         `flex items-center space-x-2 p-2 rounded-md text-sm ${isActive
@@ -161,9 +163,9 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
                     >
                       <span className="text-gray-600">•</span>
                       <span>Salary</span>
-                    </NavLink>
+                    </NavLink> */}
                   </div>
-                )} */}
+                )}
               </div>
             )}
 
