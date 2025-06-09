@@ -1,7 +1,7 @@
 import axios from "axios";
 import { employeeAxiosInstance } from "../../api/employee.axios";
 import { EditMeeting } from "../../pages/employee/modals/editMeetingModal";
-import { Employee, IGroup, ILeaveRequest, IMeeting } from "../../utils/Interfaces/interfaces";
+import { Employee, EmployeeFilter, IGroup, ILeaveRequest, IMeeting } from "../../utils/Interfaces/interfaces";
 
 
 
@@ -326,6 +326,48 @@ export const downloadPayslipService = async (employeeId: string , month : number
     return response.data;
 };
 
+export const getUsersForManagers = async (
+    filter: EmployeeFilter,
+    page: number,
+    pageSize: number,
+): Promise<{ data: Employee[], total: number, active: number, inactive: number, page: number, pageSize: number }> => {
+    const response = await employeeAxiosInstance.get(`/users?page=${page}&pageSize=${pageSize}`, {
+        params: { ...filter }
+    });
+    return response.data;
+}
 
+export const deleteUserForManagers = async (id: string) => {
+    const response = await employeeAxiosInstance.delete(`/users/${id}`);
+    return response.data;
+}
 
+export const addUserForManagers = async (userData: {
+    fullName: string;
+    email: string;
+    role: string;
+    department: string;
+    password: string;
+    salary: number;
+}) => {
+    const response = await employeeAxiosInstance.post("/users", { userData });
+    return response.data;
+}
 
+export const getAllLeaveRequestsForManagerService = async () : Promise<{leaveRequests : ILeaveRequest[] | []}> => {
+    const response = await employeeAxiosInstance.get("/leave/requests");
+    return response.data;
+}
+
+export const updateLeaveRequestStatusForManagerService = async (leaveRequestId: string, status: "Approved" | "Rejected", reason?: string) => {
+    const response = await employeeAxiosInstance.patch(`/leave/requests/${leaveRequestId}`, {
+        status,
+        reason
+    }, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+    );
+    return response.data;
+}

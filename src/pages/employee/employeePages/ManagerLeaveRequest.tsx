@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Button } from "../../../components/ui/button";
 import { CheckCircle, } from "lucide-react";
 import { useSnackbar } from "notistack";
-import { getAllLeaveRequestsService, updateLeaveRequestStatusService } from "../../../services/admin/adminService";
 import ShadTable from "../../../components/TableComponent";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import RejectLeaveRequestModal from "../modals/RejectLeaveRequest";
 import { useLocation } from "react-router-dom";
+import { getAllLeaveRequestsForManagerService, updateLeaveRequestStatusForManagerService } from "../../../services/user/userService";
 
 // Define LeaveRequest interface
 export interface LeaveRequest {
@@ -41,7 +41,7 @@ const ManagerLeaveManagementPage = () => {
     useEffect(() => {
         const fetchLeaveRequests = async () => {
             try {
-                const data = await getAllLeaveRequestsService();
+                const data = await getAllLeaveRequestsForManagerService();
                 const updatedLeaveRequests = (data.leaveRequests || []).map((request: LeaveRequest) => {
                     const startDate = new Date(request.startDate);
                     const endDate = new Date(request.endDate);
@@ -66,7 +66,7 @@ const ManagerLeaveManagementPage = () => {
     // Handle approve/reject actions
     const handleApprove = async (id: string, userId: string) => {
         try {
-            await updateLeaveRequestStatusService(id, "Approved", userId);
+            await updateLeaveRequestStatusForManagerService(id, "Approved", userId);
             setLeaveRequests(leaveRequests.map(req => req._id === id ? { ...req, status: "Approved" } : req));
             enqueueSnackbar("Leave request approved successfully", { variant: "success" });
         } catch (error) {

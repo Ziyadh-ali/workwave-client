@@ -212,3 +212,10 @@ export interface IMeeting {
     createdBy: string;
     participants: string[];
 }
+
+export interface EmployeeFilter {
+    role?: string;
+    status?: string;
+    department?: string;
+    [key: string]: string | undefined;
+}

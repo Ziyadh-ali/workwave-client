@@ -69,8 +69,6 @@ function App() {
 
               <Route path="help-desk" element={<EmployeeHelpCenterPage />} />
 
-              {/* <Route path="project" element={<ProjectManagementPage />} /> */}
-
               <Route path="developers/developers-list" element={<ManagerDeveloperManagement />} />
 
               <Route path="developers/leave" element={<ManagerLeaveManagementPage />} />

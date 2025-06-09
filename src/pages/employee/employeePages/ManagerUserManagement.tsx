@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Input } from "../../../components/ui/input";
 import AddUserModal from "../../admin/modals/AddUserModal";
 import { enqueueSnackbar } from "notistack";
-import { addUser, deleteUser, getUsers } from "../../../services/admin/adminService";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +12,7 @@ import { useConfirmModal } from "../../../components/useConfirm";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import { Employee } from "../../../utils/Interfaces/interfaces";
+import { addUserForManagers, deleteUserForManagers, getUsersForManagers } from "../../../services/user/userService";
 
 interface EmployeeFilter {
   role?: string;
@@ -45,7 +45,7 @@ function ManagerDeveloperManagement() {
     console.log(loading);
 
     try {
-      const response = await getUsers(filter, page, pageSize);
+      const response = await getUsersForManagers(filter, page, pageSize);
       console.log(response.data)
       setUsers(response.data);
       setTotal(response.total);
@@ -79,7 +79,7 @@ function ManagerDeveloperManagement() {
     salary: number;
   }) => {
     try {
-      const data = await addUser(userData);
+      const data = await addUserForManagers(userData);
       enqueueSnackbar(data.message, { variant: "success" });
       fetchUsers()
       setTimeout(() => {
@@ -104,7 +104,7 @@ function ManagerDeveloperManagement() {
       message : "Are you sure you want to delete this Employee?",
       onConfirm : async () => {
         try {
-          const response = await deleteUser(userId);
+          const response = await deleteUserForManagers(userId);
           enqueueSnackbar(response.message, { variant: "success" });
           navigate("/developers")
         } catch (error) {

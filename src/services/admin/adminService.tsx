@@ -1,5 +1,5 @@
 import { adminAxiosInstance } from "../../api/admin.axios";
-import { Employee, ILeaveRequest, IPayroll } from "../../utils/Interfaces/interfaces";
+import { Employee, EmployeeFilter, ILeaveRequest, IPayroll } from "../../utils/Interfaces/interfaces";
 
 export const adminLoginService = async (data: { email: string, password: string }) => {
     const response = await adminAxiosInstance.post("/login", data);
@@ -18,12 +18,6 @@ export const addUser = async (userData: {
     return response.data;
 }
 
-interface EmployeeFilter {
-    role?: string;
-    status?: string;
-    department?: string;
-    [key: string]: string | undefined;
-}
 export const getUsers = async (
     filter: EmployeeFilter,
     page: number,
