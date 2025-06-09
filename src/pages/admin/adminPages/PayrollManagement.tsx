@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, X } from "lucide-react";
 import { useSnackbar } from "notistack";
 import ShadTable from "../../../components/TableComponent";
 import Sidebar from "../../../components/SidebarComponent";
@@ -25,6 +25,10 @@ const PayrollManagementPage = () => {
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
     const [taxPercentage, setTaxPercentage] = useState<number>(0);
     const [isGenerating, setIsGenerating] = useState(false);
+
+    // State for modal
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [selectedPayroll, setSelectedPayroll] = useState<IPayroll | null>(null);
 
     useEffect(() => {
         const fetchPayrolls = async () => {
@@ -78,6 +82,19 @@ const PayrollManagementPage = () => {
         }
     };
 
+    // Modal open handler
+    const openDetailsModal = (payroll: IPayroll) => {
+        setSelectedPayroll(payroll);
+        setShowDetailsModal(true);
+    };
+
+    // Modal close handler
+    const closeDetailsModal = () => {
+        setSelectedPayroll(null);
+        setShowDetailsModal(false);
+    };
+
+    // Columns shown in table - fewer details
     const columns = [
         {
             header: "Employee",
@@ -93,34 +110,6 @@ const PayrollManagementPage = () => {
                 `${new Date(row.year, row.month - 1).toLocaleString('default', { month: 'long' })} ${row.year}`,
         },
         {
-            header: "Working Days",
-            accessor: (row: IPayroll) => row.workingDays,
-        },
-        {
-            header: "Present Days",
-            accessor: (row: IPayroll) => row.presentDays,
-        },
-        {
-            header: "Base Salary",
-            accessor: (row: IPayroll) => `₹${row.baseSalary.toLocaleString()}`,
-        },
-        {
-            header: "Tax Deduction",
-            accessor: (row: IPayroll) => `₹${row.taxDeduction.toLocaleString()}`,
-        },
-        {
-            header: "PF Deduction",
-            accessor: (row: IPayroll) => `₹${row.pfDeduction.toLocaleString()}`,
-        },
-        {
-            header: "Loss of Pay",
-            accessor: (row: IPayroll) => `₹${row.lossOfPayDeduction.toLocaleString()}`,
-        },
-        {
-            header: "Total Deductions",
-            accessor: (row: IPayroll) => `₹${row.totalDeduction.toLocaleString()}`,
-        },
-        {
             header: "Net Salary",
             accessor: (row: IPayroll) => `₹${row.netSalary.toLocaleString()}`,
         },
@@ -134,14 +123,17 @@ const PayrollManagementPage = () => {
             ),
         },
         {
-            header: "Generated At",
-            accessor: (row: IPayroll) =>
-                row.generatedAt ? new Date(row.generatedAt).toLocaleDateString() : "-",
-        },
-        {
             header: "Actions",
             accessor: (row: IPayroll) => (
                 <div className="flex space-x-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openDetailsModal(row)}
+                    >
+                        See Details
+                    </Button>
+
                     {row.status === "Pending" ? (
                         <Button
                             size="sm"
@@ -159,7 +151,6 @@ const PayrollManagementPage = () => {
             ),
         }
     ];
-
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -220,6 +211,43 @@ const PayrollManagementPage = () => {
                         />
                     </CardContent>
                 </Card>
+
+                {/* Details Modal */}
+                {showDetailsModal && selectedPayroll && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                        onClick={closeDetailsModal}
+                    >
+                        <div
+                            className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative"
+                            onClick={e => e.stopPropagation()} // Prevent closing modal when clicking inside content
+                        >
+                            <button
+                                onClick={closeDetailsModal}
+                                className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+                                aria-label="Close modal"
+                            >
+                                <X size={24} />
+                            </button>
+                            <h2 className="text-xl font-semibold mb-4">Payroll Details</h2>
+                            <div className="space-y-2 text-sm">
+                                <div><strong>Employee:</strong> {selectedPayroll.employeeId.fullName}</div>
+                                <div><strong>Role:</strong> {selectedPayroll.employeeId.role}</div>
+                                <div><strong>Month/Year:</strong> {new Date(selectedPayroll.year, selectedPayroll.month - 1).toLocaleString('default', { month: 'long' })} {selectedPayroll.year}</div>
+                                <div><strong>Working Days:</strong> {selectedPayroll.workingDays}</div>
+                                <div><strong>Present Days:</strong> {selectedPayroll.presentDays}</div>
+                                <div><strong>Base Salary:</strong> ₹{selectedPayroll.baseSalary.toLocaleString()}</div>
+                                <div><strong>Tax Deduction:</strong> ₹{selectedPayroll.taxDeduction.toLocaleString()}</div>
+                                <div><strong>PF Deduction:</strong> ₹{selectedPayroll.pfDeduction.toLocaleString()}</div>
+                                <div><strong>Loss of Pay Deduction:</strong> ₹{selectedPayroll.lossOfPayDeduction.toLocaleString()}</div>
+                                <div><strong>Total Deductions:</strong> ₹{selectedPayroll.totalDeduction.toLocaleString()}</div>
+                                <div><strong>Net Salary:</strong> ₹{selectedPayroll.netSalary.toLocaleString()}</div>
+                                <div><strong>Status:</strong> {selectedPayroll.status}</div>
+                                <div><strong>Generated At:</strong> {selectedPayroll.generatedAt ? new Date(selectedPayroll.generatedAt).toLocaleDateString() : "-"}</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
