@@ -198,3 +198,9 @@ export const getAllPayrollsService = async () : Promise<{payrolls : IPayroll[] |
     const response = await adminAxiosInstance.get("/payrolls");
     return response.data;
 }
+
+export const getPayrollsForReportService = async (month : number , year : number) : Promise<{data : IPayroll[] | [] , count : number}> => {
+    const response = await adminAxiosInstance.get(`/payroll?month=${month}&year=${year}`);
+    return response.data;
+}
+
