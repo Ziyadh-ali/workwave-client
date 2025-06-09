@@ -211,44 +211,43 @@ const PayrollManagementPage = () => {
                         />
                     </CardContent>
                 </Card>
-
-                {/* Details Modal */}
-                {showDetailsModal && selectedPayroll && (
+            </div>
+            {/* Details Modal */}
+            {showDetailsModal && selectedPayroll && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                    onClick={closeDetailsModal}
+                >
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-                        onClick={closeDetailsModal}
+                        className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative"
+                        onClick={e => e.stopPropagation()}
                     >
-                        <div
-                            className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative"
-                            onClick={e => e.stopPropagation()} // Prevent closing modal when clicking inside content
+                        <button
+                            onClick={closeDetailsModal}
+                            className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+                            aria-label="Close modal"
                         >
-                            <button
-                                onClick={closeDetailsModal}
-                                className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-                                aria-label="Close modal"
-                            >
-                                <X size={24} />
-                            </button>
-                            <h2 className="text-xl font-semibold mb-4">Payroll Details</h2>
-                            <div className="space-y-2 text-sm">
-                                <div><strong>Employee:</strong> {selectedPayroll.employeeId.fullName}</div>
-                                <div><strong>Role:</strong> {selectedPayroll.employeeId.role}</div>
-                                <div><strong>Month/Year:</strong> {new Date(selectedPayroll.year, selectedPayroll.month - 1).toLocaleString('default', { month: 'long' })} {selectedPayroll.year}</div>
-                                <div><strong>Working Days:</strong> {selectedPayroll.workingDays}</div>
-                                <div><strong>Present Days:</strong> {selectedPayroll.presentDays}</div>
-                                <div><strong>Base Salary:</strong> ₹{selectedPayroll.baseSalary.toLocaleString()}</div>
-                                <div><strong>Tax Deduction:</strong> ₹{selectedPayroll.taxDeduction.toLocaleString()}</div>
-                                <div><strong>PF Deduction:</strong> ₹{selectedPayroll.pfDeduction.toLocaleString()}</div>
-                                <div><strong>Loss of Pay Deduction:</strong> ₹{selectedPayroll.lossOfPayDeduction.toLocaleString()}</div>
-                                <div><strong>Total Deductions:</strong> ₹{selectedPayroll.totalDeduction.toLocaleString()}</div>
-                                <div><strong>Net Salary:</strong> ₹{selectedPayroll.netSalary.toLocaleString()}</div>
-                                <div><strong>Status:</strong> {selectedPayroll.status}</div>
-                                <div><strong>Generated At:</strong> {selectedPayroll.generatedAt ? new Date(selectedPayroll.generatedAt).toLocaleDateString() : "-"}</div>
-                            </div>
+                            <X size={24} />
+                        </button>
+                        <h2 className="text-xl font-semibold mb-4">Payroll Details</h2>
+                        <div className="space-y-2 text-sm">
+                            <div><strong>Employee:</strong> {selectedPayroll.employeeId.fullName}</div>
+                            <div><strong>Role:</strong> {selectedPayroll.employeeId.role}</div>
+                            <div><strong>Month/Year:</strong> {new Date(selectedPayroll.year, selectedPayroll.month - 1).toLocaleString('default', { month: 'long' })} {selectedPayroll.year}</div>
+                            <div><strong>Working Days:</strong> {selectedPayroll.workingDays}</div>
+                            <div><strong>Present Days:</strong> {selectedPayroll.presentDays}</div>
+                            <div><strong>Base Salary:</strong> ₹{selectedPayroll.baseSalary.toLocaleString()}</div>
+                            <div><strong>Tax Deduction:</strong> ₹{selectedPayroll.taxDeduction.toLocaleString()}</div>
+                            <div><strong>PF Deduction:</strong> ₹{selectedPayroll.pfDeduction.toLocaleString()}</div>
+                            <div><strong>Loss of Pay Deduction:</strong> ₹{selectedPayroll.lossOfPayDeduction.toLocaleString()}</div>
+                            <div><strong>Total Deductions:</strong> ₹{selectedPayroll.totalDeduction.toLocaleString()}</div>
+                            <div><strong>Net Salary:</strong> ₹{selectedPayroll.netSalary.toLocaleString()}</div>
+                            <div><strong>Status:</strong> {selectedPayroll.status}</div>
+                            <div><strong>Generated At:</strong> {selectedPayroll.generatedAt ? new Date(selectedPayroll.generatedAt).toLocaleDateString() : "-"}</div>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
