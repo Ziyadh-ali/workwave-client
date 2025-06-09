@@ -106,7 +106,6 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
               <Calendar className="w-5 h-5" />
               <span>Meeting</span>
             </NavLink>
-            /
                 {/* {isEmployeesOpen && (
                   <div className="ml-6 mt-2 space-y-1">
                     <NavLink
