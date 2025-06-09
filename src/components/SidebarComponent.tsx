@@ -6,24 +6,22 @@ import {
   Calendar,
   DollarSign,
   HelpCircle,
-  ChevronRight,
-  Users,
   // Users,
   // ChevronRight,
   // Folder,
 } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { useState } from "react";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../store/store";
+// import { useState } from "react";
 
 const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
-  const { employee } = useSelector((state: RootState) => state.employee || { employee: null });
+  // const { employee } = useSelector((state: RootState) => state.employee || { employee: null });
   // State to manage the visibility of the Employees submenu
-  const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
+  // const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
 
-  const toggleEmployeesMenu = () => {
-    setIsEmployeesOpen(!isEmployeesOpen);
-  };
+  // const toggleEmployeesMenu = () => {
+  //   setIsEmployeesOpen(!isEmployeesOpen);
+  // };
 
   return (
     <div className="w-64 bg-white shadow-md">
@@ -108,25 +106,8 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
               <Calendar className="w-5 h-5" />
               <span>Meeting</span>
             </NavLink>
-            {employee?.role && (employee.role === "hr") && (
-              <div>
-                <button
-                  onClick={toggleEmployeesMenu}
-                  className={`flex items-center justify-between w-full p-2 rounded-md ${isEmployeesOpen
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-5 h-5" />
-                    <span>Developers</span>
-                  </div>
-                  <ChevronRight
-                    className={`transform transition-transform duration-200 ${isEmployeesOpen ? "rotate-90" : "rotate-0"
-                      } w-5 h-5`}
-                  />
-                </button> 
-                {isEmployeesOpen && (
+            /
+                {/* {isEmployeesOpen && (
                   <div className="ml-6 mt-2 space-y-1">
                     <NavLink
                       to="/developers/developers-list"
@@ -151,7 +132,7 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
                     >
                       <span className="text-gray-600">•</span>
                       <span>Leave Requests</span>
-                    </NavLink>
+                    </NavLink> */}
                     {/* <NavLink
                       to="/developers/salary"
                       className={({ isActive }) =>
@@ -164,10 +145,10 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
                       <span className="text-gray-600">•</span>
                       <span>Salary</span>
                     </NavLink> */}
-                  </div>
-                )}
-              </div>
-            )}
+                  {/* </div> */}
+                {/* )} */}
+              {/* </div> */}
+            {/* )} */}
 
           </nav> :
 

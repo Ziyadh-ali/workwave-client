@@ -36,6 +36,7 @@ export const NotificationDropdown = () => {
                 fetchUnreadNotifications(userId)
             ]).finally(() => setIsLoading(false));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isConnected, userId, fetchNotifications, fetchUnreadNotifications]);
 
     const getNotificationIcon = (type: string) => {
