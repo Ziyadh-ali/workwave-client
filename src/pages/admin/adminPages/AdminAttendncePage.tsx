@@ -205,9 +205,13 @@ const AdminAttendancePage = () => {
 
     const formatTimeString = (value?: string | null): string => {
         if (!value) return "";
-        const parsed = new Date(value);
-        if (isNaN(parsed.getTime())) return "";
-        return format(parsed, "HH:mm");
+        const parsedUTC = new Date(value);
+        if (isNaN(parsedUTC.getTime())) return "";
+
+        // Convert to local time
+        const localDate = new Date(parsedUTC.getTime() + parsedUTC.getTimezoneOffset() * 60000);
+
+        return format(localDate, "HH:mm");
     };
 
     return (
