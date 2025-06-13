@@ -120,24 +120,26 @@ const AdminAttendancePage = () => {
 
         const updatePayload: Partial<{
             status: Attendance["status"];
-            checkInTime: string;
-            checkOutTime: string;
+            checkInTime: Date;
+            checkOutTime: Date;
         }> = {};
 
         if (data.status !== original.status) {
             updatePayload.status = data.status;
         }
 
-        if (
-            data.checkInTime
-        ) {
-            updatePayload.checkInTime = data.checkInTime;
+        const baseDate = original.date || new Date().toISOString().split("T")[0];
+
+        const combineDateAndTime = (date: string, time: string): Date => {
+            return new Date(`${date}T${time}:00`);
+        };
+
+        if (data.checkInTime) {
+            updatePayload.checkInTime = combineDateAndTime(baseDate, data.checkInTime);
         }
 
-        if (
-            data.checkOutTime
-        ) {
-            updatePayload.checkOutTime = data.checkOutTime;
+        if (data.checkOutTime) {
+            updatePayload.checkOutTime = combineDateAndTime(baseDate, data.checkOutTime);
         }
 
         if (Object.keys(updatePayload).length === 0) {
@@ -145,10 +147,10 @@ const AdminAttendancePage = () => {
             return;
         }
 
-
         try {
             const response = await updateAttendanceService(id, updatePayload);
             enqueueSnackbar(response.message, { variant: "success" });
+
             setAttendanceData((prevData) =>
                 prevData.map((item) =>
                     item._id === id
@@ -159,6 +161,7 @@ const AdminAttendancePage = () => {
                         : item
                 )
             );
+
             setEditedStatus((prev) => {
                 const newState = { ...prev };
                 delete newState[id];
