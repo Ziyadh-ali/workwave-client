@@ -12,6 +12,7 @@ import { validationSchema } from "../../../utils/editValidation";
 import { getManagers, getUserDetails, updateUserService } from "../../../services/admin/adminService";
 import Sidebar from "../../../components/SidebarComponent";
 import { Employee } from "../../../utils/Interfaces/interfaces";
+import { AxiosError } from "axios";
 
 
 
@@ -56,12 +57,11 @@ const AdminEditUserPage = () => {
                 });
 
                 const response = await updateUserService(userId || "", formData);
-                console.log(response);
                 enqueueSnackbar(response.message, { variant: "success" });
                 navigate("/admin/users");
             } catch (error) {
                 console.error("Submission Error:", error);
-                enqueueSnackbar("An error occurred during submission", { variant: "error" });
+                enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "An error occurred during submission", { variant: "error" });
             } finally {
                 setSubmitting(false);
             }
