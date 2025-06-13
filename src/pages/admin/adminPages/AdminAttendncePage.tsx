@@ -135,6 +135,7 @@ const AdminAttendancePage = () => {
 
         if (
             data.checkInTime &&
+            data.checkInTime.trim() !== "" &&
             formatTimeString(original.checkInTime) !== data.checkInTime
         ) {
             updatePayload.checkInTime = combineDateAndTime(baseDate, data.checkInTime);
@@ -142,6 +143,7 @@ const AdminAttendancePage = () => {
 
         if (
             data.checkOutTime &&
+            data.checkOutTime.trim() !== "" &&
             formatTimeString(original.checkOutTime) !== data.checkOutTime
         ) {
             updatePayload.checkOutTime = combineDateAndTime(baseDate, data.checkOutTime);
