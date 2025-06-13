@@ -114,17 +114,49 @@ const AdminAttendancePage = () => {
             checkOutTime?: string;
         }
     ) => {
+        const original = attendanceData.find((att) => att._id === id);
+        if (!original) return;
+
+        const updatePayload: Partial<{
+            status: Attendance["status"];
+            checkInTime: string;
+            checkOutTime: string;
+        }> = {};
+
+        // Compare and add only changed fields
+        if (data.status !== original.status) {
+            updatePayload.status = data.status;
+        }
+
+        if (
+            data.checkInTime &&
+            formatTimeString(data.checkInTime) !== formatTimeString(original.checkInTime)
+        ) {
+            updatePayload.checkInTime = data.checkInTime;
+        }
+
+        if (
+            data.checkOutTime &&
+            formatTimeString(data.checkOutTime) !== formatTimeString(original.checkOutTime)
+        ) {
+            updatePayload.checkOutTime = data.checkOutTime;
+        }
+
+        // If nothing changed, skip
+        if (Object.keys(updatePayload).length === 0) {
+            enqueueSnackbar("No changes to save.", { variant: "info" });
+            return;
+        }
+
         try {
-            const response = await updateAttendanceService(id, data);
+            const response = await updateAttendanceService(id, updatePayload);
             enqueueSnackbar(response.message, { variant: "success" });
             setAttendanceData((prevData) =>
                 prevData.map((item) =>
                     item._id === id
                         ? {
                             ...item,
-                            status: data.status,
-                            checkInTime: data.checkInTime,
-                            checkOutTime: data.checkOutTime,
+                            ...updatePayload,
                         }
                         : item
                 )
@@ -140,6 +172,16 @@ const AdminAttendancePage = () => {
                 error instanceof AxiosError ? error.response?.data.message : "Failed to update",
                 { variant: "error" }
             );
+        }
+    };
+
+    // Utility to compare "HH:mm" time strings with Date object or string
+    const formatTimeString = (value?: string | null): string => {
+        if (!value) return "";
+        try {
+            return format(new Date(value), "HH:mm");
+        } catch {
+            return value; // fallback to raw string if parsing fails
         }
     };
 

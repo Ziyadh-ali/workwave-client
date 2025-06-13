@@ -118,11 +118,11 @@ export const getAllAttendanceService = async (
 };
 
 export const updateAttendanceService = async (attendanceId: string,data : {
-    status: "Present" | "Absent" | "Weekend" | "Holiday" | "Pending",
+    status?: "Present" | "Absent" | "Weekend" | "Holiday" | "Pending",
     checkInTime?: string,
     checkOutTime?: string,
 }) => {
-    const response = await adminAxiosInstance.patch(`/attendance/${attendanceId}?status=${data.status}`, {
+    const response = await adminAxiosInstance.patch(`/attendance/${attendanceId}`, {
         data
     });
     return response.data;
