@@ -131,7 +131,9 @@ const AdminAttendancePage = () => {
         const baseDate = original.date || new Date().toISOString().split("T")[0];
 
         const combineDateAndTime = (date: string, time: string): Date => {
-            return new Date(`${date}T${time}:00`);
+            const [year, month, day] = date.split("-").map(Number);
+            const [hour, minute] = time.split(":").map(Number);
+            return new Date(year, month - 1, day, hour, minute); // local time
         };
 
         if (data.checkInTime) {
@@ -313,107 +315,107 @@ const AdminAttendancePage = () => {
                                                     size="sm"
                                                     onClick={() =>
                                                         handleSaveStatus(att._id, {
-                                                            status: editedStatus[att._id]?.status || att.status,
-                                                            checkInTime: editedStatus[att._id]?.checkInTime || "",
-                                                            checkOutTime: editedStatus[att._id]?.checkOutTime || "",
+                                                            status: editedStatus[att._id]?.status ?? att.status,
+                                                            checkInTime: editedStatus[att._id]?.checkInTime ?? formatTimeString(att.checkInTime),
+                                                            checkOutTime: editedStatus[att._id]?.checkOutTime ?? formatTimeString(att.checkOutTime),
                                                         })
                                                     }
                                                 >
-                                                    Save
+                                                Save
+                                            </Button>
+                                            {att.isRegularizable && att.regularizationRequest?.status === "Pending" && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setSelectedAttendance(att);
+                                                        setAdminRemarks(att.regularizationRequest?.adminRemarks || "");
+                                                    }}
+                                                >
+                                                    Review
                                                 </Button>
-                                                {att.isRegularizable && att.regularizationRequest?.status === "Pending" && (
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => {
-                                                            setSelectedAttendance(att);
-                                                            setAdminRemarks(att.regularizationRequest?.adminRemarks || "");
-                                                        }}
-                                                    >
-                                                        Review
-                                                    </Button>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan={6} className="p-2 border text-center">
-                                            No data available
+                                            )}
                                         </td>
-                                    </tr>
+                                        </tr>
+                            ))
+                            ) : (
+                            <tr>
+                                <td colSpan={6} className="p-2 border text-center">
+                                    No data available
+                                </td>
+                            </tr>
                                 )}
-                            </tbody>
-                        </table>
-                    </CardContent>
-                </Card>
+                        </tbody>
+                    </table>
+                </CardContent>
+            </Card>
 
-                {/* Pagination */}
-                <div className="flex justify-end items-center gap-2 mt-4">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                                key={i + 1}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={`px-3 py-1 text-sm rounded border ${currentPage === i + 1
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-white text-gray-800 hover:bg-gray-100"
-                                    }`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                    >
-                        Next
-                    </Button>
+            {/* Pagination */}
+            <div className="flex justify-end items-center gap-2 mt-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    Previous
+                </Button>
+                <div className="flex items-center space-x-1">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i + 1}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`px-3 py-1 text-sm rounded border ${currentPage === i + 1
+                                ? "bg-blue-600 text-white"
+                                : "bg-white text-gray-800 hover:bg-gray-100"
+                                }`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
                 </div>
-
-                {/* Regularization Modal */}
-                <Dialog open={!!selectedAttendance} onOpenChange={() => setSelectedAttendance(null)}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Regularization Request</DialogTitle>
-                        </DialogHeader>
-                        <div>
-                            <p className="text-sm mb-2">
-                                <strong>Reason:</strong> {selectedAttendance?.regularizationRequest?.reason}
-                            </p>
-                            <Textarea
-                                placeholder="Admin remarks..."
-                                value={adminRemarks}
-                                onChange={(e) => setAdminRemarks(e.target.value)}
-                                className="w-full mb-4"
-                            />
-                        </div>
-                        <DialogFooter className="gap-2">
-                            <Button
-                                variant="destructive"
-                                onClick={() => handleRegularizationAction("Rejected")}
-                            >
-                                Reject
-                            </Button>
-                            <Button onClick={() => handleRegularizationAction("Approved")}>
-                                Approve
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                >
+                    Next
+                </Button>
             </div>
+
+            {/* Regularization Modal */}
+            <Dialog open={!!selectedAttendance} onOpenChange={() => setSelectedAttendance(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Regularization Request</DialogTitle>
+                    </DialogHeader>
+                    <div>
+                        <p className="text-sm mb-2">
+                            <strong>Reason:</strong> {selectedAttendance?.regularizationRequest?.reason}
+                        </p>
+                        <Textarea
+                            placeholder="Admin remarks..."
+                            value={adminRemarks}
+                            onChange={(e) => setAdminRemarks(e.target.value)}
+                            className="w-full mb-4"
+                        />
+                    </div>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="destructive"
+                            onClick={() => handleRegularizationAction("Rejected")}
+                        >
+                            Reject
+                        </Button>
+                        <Button onClick={() => handleRegularizationAction("Approved")}>
+                            Approve
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
+        </div >
     );
 };
 
