@@ -23,6 +23,7 @@ import { Textarea } from "../../../components/ui/textarea";
 import { getAllAttendanceService, regularizeStatusService, updateAttendanceService } from "../../../services/admin/adminService";
 import { enqueueSnackbar } from "notistack";
 import { AxiosError } from "axios";
+// import { AxiosError } from "axios";
 
 type Attendance = {
     _id: string;
@@ -45,7 +46,13 @@ type Attendance = {
 
 const AdminAttendancePage = () => {
     const [attendanceData, setAttendanceData] = useState<Attendance[]>([]);
-    const [editedStatus, setEditedStatus] = useState<{ [id: string]: Attendance["status"] }>({});
+    const [editedStatus, setEditedStatus] = useState<{
+        [id: string]: {
+            status: Attendance["status"];
+            checkInTime?: string;
+            checkOutTime?: string;
+        };
+    }>({});
     const [selectedDate, setSelectedDate] = useState<string>("");
     const [total, setTotal] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -55,7 +62,27 @@ const AdminAttendancePage = () => {
     const [adminRemarks, setAdminRemarks] = useState("");
 
     const handleStatusChange = (id: string, newStatus: Attendance["status"]) => {
-        setEditedStatus((prev) => ({ ...prev, [id]: newStatus }));
+        setEditedStatus((prev) => ({
+            ...prev,
+            [id]: {
+                ...prev[id],
+                status: newStatus,
+            },
+        }));
+    };
+
+    const handleCheckInChange = (id: string, value: string) => {
+        setEditedStatus((prev) => ({
+            ...prev,
+            [id]: { ...prev[id], checkInTime: value },
+        }));
+    };
+
+    const handleCheckOutChange = (id: string, value: string) => {
+        setEditedStatus((prev) => ({
+            ...prev,
+            [id]: { ...prev[id], checkOutTime: value },
+        }));
     };
 
     useEffect(() => {
@@ -79,12 +106,28 @@ const AdminAttendancePage = () => {
         fetchData();
     }, [selectedDate, currentPage]);
 
-    const handleSaveStatus = async (id: string, newStatus: Attendance["status"]) => {
+    const handleSaveStatus = async (
+        id: string,
+        data: {
+            status: Attendance["status"];
+            checkInTime?: string;
+            checkOutTime?: string;
+        }
+    ) => {
         try {
-            const response = await updateAttendanceService(id, newStatus);
+            const response = await updateAttendanceService(id, data);
             enqueueSnackbar(response.message, { variant: "success" });
             setAttendanceData((prevData) =>
-                prevData.map((item) => (item._id === id ? { ...item, status: newStatus } : item))
+                prevData.map((item) =>
+                    item._id === id
+                        ? {
+                            ...item,
+                            status: data.status,
+                            checkInTime: data.checkInTime,
+                            checkOutTime: data.checkOutTime,
+                        }
+                        : item
+                )
             );
             setEditedStatus((prev) => {
                 const newState = { ...prev };
@@ -186,14 +229,30 @@ const AdminAttendancePage = () => {
                                                 {att.date ? format(new Date(att.date), "MM/dd/yyyy") : "—"}
                                             </td>
                                             <td className="p-2 border">
-                                                {att.checkInTime ? format(new Date(att.checkInTime), "hh:mm a") : "—"}
+                                                <Input
+                                                    type="time"
+                                                    value={
+                                                        editedStatus[att._id]?.checkInTime ??
+                                                        (att.checkInTime ? format(new Date(att.checkInTime), "HH:mm") : "")
+                                                    }
+                                                    onChange={(e) => handleCheckInChange(att._id, e.target.value)}
+                                                    className="w-[120px]"
+                                                />
                                             </td>
                                             <td className="p-2 border">
-                                                {att.checkOutTime ? format(new Date(att.checkOutTime), "hh:mm a") : "—"}
+                                                <Input
+                                                    type="time"
+                                                    value={
+                                                        editedStatus[att._id]?.checkOutTime ??
+                                                        (att.checkOutTime ? format(new Date(att.checkOutTime), "HH:mm") : "")
+                                                    }
+                                                    onChange={(e) => handleCheckOutChange(att._id, e.target.value)}
+                                                    className="w-[120px]"
+                                                />
                                             </td>
                                             <td className="p-2 border">
                                                 <Select
-                                                    value={editedStatus[att._id] ?? att.status}
+                                                    value={editedStatus[att._id]?.status || att.status}
                                                     onValueChange={(value: Attendance["status"]) =>
                                                         handleStatusChange(att._id, value)
                                                     }
@@ -213,7 +272,11 @@ const AdminAttendancePage = () => {
                                                 <Button
                                                     size="sm"
                                                     onClick={() =>
-                                                        handleSaveStatus(att._id, editedStatus[att._id] ?? att.status)
+                                                        handleSaveStatus(att._id, {
+                                                            status: editedStatus[att._id]?.status || att.status,
+                                                            checkInTime: editedStatus[att._id]?.checkInTime || att.checkInTime || "",
+                                                            checkOutTime: editedStatus[att._id]?.checkOutTime || att.checkOutTime || "",
+                                                        })
                                                     }
                                                 >
                                                     Save
@@ -261,8 +324,8 @@ const AdminAttendancePage = () => {
                                 key={i + 1}
                                 onClick={() => setCurrentPage(i + 1)}
                                 className={`px-3 py-1 text-sm rounded border ${currentPage === i + 1
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-white text-gray-800 hover:bg-gray-100"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white text-gray-800 hover:bg-gray-100"
                                     }`}
                             >
                                 {i + 1}

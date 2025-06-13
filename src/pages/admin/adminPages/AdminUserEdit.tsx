@@ -60,7 +60,6 @@ const AdminEditUserPage = () => {
                 enqueueSnackbar(response.message, { variant: "success" });
                 navigate("/admin/users");
             } catch (error) {
-                console.error("Submission Error:", error);
                 enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "An error occurred during submission", { variant: "error" });
             } finally {
                 setSubmitting(false);

@@ -87,7 +87,7 @@ export const updateLeaveTypeService = async (
     return response.data;
 }
 
-export const getAllLeaveRequestsService = async () : Promise<{leaveRequests : ILeaveRequest[] | []}> => {
+export const getAllLeaveRequestsService = async (): Promise<{ leaveRequests: ILeaveRequest[] | [] }> => {
     const response = await adminAxiosInstance.get("/leave/requests");
     return response.data;
 }
@@ -117,8 +117,14 @@ export const getAllAttendanceService = async (
     return response.data;
 };
 
-export const updateAttendanceService = async (attendanceId: string, status: "Present" | "Absent" | "Weekend" | "Holiday" | "Pending") => {
-    const response = await adminAxiosInstance.patch(`/attendance/${attendanceId}?status=${status}`);
+export const updateAttendanceService = async (attendanceId: string,data : {
+    status: "Present" | "Absent" | "Weekend" | "Holiday" | "Pending",
+    checkInTime?: string,
+    checkOutTime?: string,
+}) => {
+    const response = await adminAxiosInstance.patch(`/attendance/${attendanceId}?status=${data.status}`, {
+        data
+    });
     return response.data;
 }
 
@@ -188,12 +194,12 @@ export const generateBulkPayrollService = async (month: number, year: number, ta
     return response.data;
 }
 
-export const getAllPayrollsService = async () : Promise<{payrolls : IPayroll[] | []}> => {
+export const getAllPayrollsService = async (): Promise<{ payrolls: IPayroll[] | [] }> => {
     const response = await adminAxiosInstance.get("/payrolls");
     return response.data;
 }
 
-export const getPayrollsForReportService = async (month : number , year : number) : Promise<{data : IPayroll[] | [] , count : number}> => {
+export const getPayrollsForReportService = async (month: number, year: number): Promise<{ data: IPayroll[] | [], count: number }> => {
     const response = await adminAxiosInstance.get(`/payroll?month=${month}&year=${year}`);
     return response.data;
 }
