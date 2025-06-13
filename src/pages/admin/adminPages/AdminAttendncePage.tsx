@@ -94,6 +94,7 @@ const AdminAttendancePage = () => {
                     itemsPerPage
                 );
                 const safeData = Array.isArray(res.attendances?.data) ? res.attendances.data : [];
+                console.log("Safe Data", safeData)
                 setAttendanceData(safeData);
                 setTotal(res.attendances?.total || 0);
             } catch (err) {
@@ -123,26 +124,22 @@ const AdminAttendancePage = () => {
             checkOutTime: string;
         }> = {};
 
-        // Compare and add only changed fields
         if (data.status !== original.status) {
             updatePayload.status = data.status;
         }
 
         if (
-            data.checkInTime 
-            // formatTimeString(data.checkInTime) !== formatTimeString(original.checkInTime)
+            data.checkInTime
         ) {
             updatePayload.checkInTime = data.checkInTime;
         }
 
         if (
-            data.checkOutTime 
-            // formatTimeString(data.checkOutTime) !== formatTimeString(original.checkOutTime)
+            data.checkOutTime
         ) {
             updatePayload.checkOutTime = data.checkOutTime;
         }
 
-        // If nothing changed, skip
         if (Object.keys(updatePayload).length === 0) {
             enqueueSnackbar("No changes to save.", { variant: "info" });
             return;
@@ -157,7 +154,7 @@ const AdminAttendancePage = () => {
                     item._id === id
                         ? {
                             ...item,
-                            ...updatePayload,
+                            ...response.updatedAttendance,
                         }
                         : item
                 )
@@ -205,6 +202,13 @@ const AdminAttendancePage = () => {
     };
 
     const totalPages = Math.ceil(total / itemsPerPage);
+
+    const formatTimeString = (value?: string | null): string => {
+        if (!value) return "";
+        const parsed = new Date(value);
+        if (isNaN(parsed.getTime())) return "";
+        return format(parsed, "HH:mm");
+    };
 
     return (
         <div className="flex min-h-screen bg-gray-100">
@@ -266,7 +270,7 @@ const AdminAttendancePage = () => {
                                                     type="time"
                                                     value={
                                                         editedStatus[att._id]?.checkInTime ??
-                                                        (att.checkInTime ? format(new Date(att.checkInTime), "HH:mm") : "")
+                                                        formatTimeString(att.checkInTime)
                                                     }
                                                     onChange={(e) => handleCheckInChange(att._id, e.target.value)}
                                                     className="w-[120px]"
@@ -277,7 +281,7 @@ const AdminAttendancePage = () => {
                                                     type="time"
                                                     value={
                                                         editedStatus[att._id]?.checkOutTime ??
-                                                        (att.checkOutTime ? format(new Date(att.checkOutTime), "HH:mm") : "")
+                                                        formatTimeString(att.checkOutTime)
                                                     }
                                                     onChange={(e) => handleCheckOutChange(att._id, e.target.value)}
                                                     className="w-[120px]"
@@ -307,8 +311,8 @@ const AdminAttendancePage = () => {
                                                     onClick={() =>
                                                         handleSaveStatus(att._id, {
                                                             status: editedStatus[att._id]?.status || att.status,
-                                                            checkInTime: editedStatus[att._id]?.checkInTime ||"",
-                                                            checkOutTime: editedStatus[att._id]?.checkOutTime ||"",
+                                                            checkInTime: editedStatus[att._id]?.checkInTime || "",
+                                                            checkOutTime: editedStatus[att._id]?.checkOutTime || "",
                                                         })
                                                     }
                                                 >
