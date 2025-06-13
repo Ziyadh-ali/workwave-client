@@ -110,7 +110,7 @@ const AdminAttendancePage = () => {
     const handleSaveStatus = async (
         id: string,
         data: {
-            status?: Attendance["status"];
+            status: Attendance["status"];
             checkInTime?: string;
             checkOutTime?: string;
         }
@@ -118,35 +118,26 @@ const AdminAttendancePage = () => {
         const original = attendanceData.find((att) => att._id === id);
         if (!original) return;
 
-        const baseDate = original.date || new Date().toISOString().split("T")[0];
-        const combineDateAndTime = (date: string, time: string): Date => {
-            return new Date(`${date}T${time}:00`);
-        };
-
         const updatePayload: Partial<{
             status: Attendance["status"];
-            checkInTime: Date;
-            checkOutTime: Date;
+            checkInTime: string;
+            checkOutTime: string;
         }> = {};
 
-        if (data.status && data.status !== original.status) {
+        if (data.status !== original.status) {
             updatePayload.status = data.status;
         }
 
         if (
-            data.checkInTime &&
-            data.checkInTime.trim() !== "" &&
-            formatTimeString(original.checkInTime) !== data.checkInTime
+            data.checkInTime
         ) {
-            updatePayload.checkInTime = combineDateAndTime(baseDate, data.checkInTime);
+            updatePayload.checkInTime = data.checkInTime;
         }
 
         if (
-            data.checkOutTime &&
-            data.checkOutTime.trim() !== "" &&
-            formatTimeString(original.checkOutTime) !== data.checkOutTime
+            data.checkOutTime
         ) {
-            updatePayload.checkOutTime = combineDateAndTime(baseDate, data.checkOutTime);
+            updatePayload.checkOutTime = data.checkOutTime;
         }
 
         if (Object.keys(updatePayload).length === 0) {
@@ -154,12 +145,10 @@ const AdminAttendancePage = () => {
             return;
         }
 
-        try {
-            console.log("🟢 Sending payload:", updatePayload);
 
+        try {
             const response = await updateAttendanceService(id, updatePayload);
             enqueueSnackbar(response.message, { variant: "success" });
-
             setAttendanceData((prevData) =>
                 prevData.map((item) =>
                     item._id === id
@@ -170,7 +159,6 @@ const AdminAttendancePage = () => {
                         : item
                 )
             );
-
             setEditedStatus((prev) => {
                 const newState = { ...prev };
                 delete newState[id];
@@ -322,9 +310,9 @@ const AdminAttendancePage = () => {
                                                     size="sm"
                                                     onClick={() =>
                                                         handleSaveStatus(att._id, {
-                                                            status: editedStatus[att._id]?.status,
-                                                            checkInTime: editedStatus[att._id]?.checkInTime,
-                                                            checkOutTime: editedStatus[att._id]?.checkOutTime,
+                                                            status: editedStatus[att._id]?.status || att.status,
+                                                            checkInTime: editedStatus[att._id]?.checkInTime || "",
+                                                            checkOutTime: editedStatus[att._id]?.checkOutTime || "",
                                                         })
                                                     }
                                                 >
@@ -422,7 +410,7 @@ const AdminAttendancePage = () => {
                     </DialogContent>
                 </Dialog>
             </div>
-        </div >
+        </div>
     );
 };
 
