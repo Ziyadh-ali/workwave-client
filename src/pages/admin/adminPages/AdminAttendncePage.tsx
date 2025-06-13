@@ -48,7 +48,7 @@ const AdminAttendancePage = () => {
     const [attendanceData, setAttendanceData] = useState<Attendance[]>([]);
     const [editedStatus, setEditedStatus] = useState<{
         [id: string]: {
-            status: Attendance["status"];
+            status?: Attendance["status"];
             checkInTime?: string;
             checkOutTime?: string;
         };
@@ -175,16 +175,6 @@ const AdminAttendancePage = () => {
             );
         }
     };
-
-    // Utility to compare "HH:mm" time strings with Date object or string
-    // const formatTimeString = (value?: string | null): string => {
-    //     if (!value) return "";
-    //     try {
-    //         return format(new Date(value), "HH:mm");
-    //     } catch {
-    //         return value; // fallback to raw string if parsing fails
-    //     }
-    // };
 
     const handleRegularizationAction = async (status: "Approved" | "Rejected") => {
         if (!selectedAttendance) return;
@@ -317,8 +307,8 @@ const AdminAttendancePage = () => {
                                                     onClick={() =>
                                                         handleSaveStatus(att._id, {
                                                             status: editedStatus[att._id]?.status || att.status,
-                                                            checkInTime: editedStatus[att._id]?.checkInTime || att.checkInTime || "",
-                                                            checkOutTime: editedStatus[att._id]?.checkOutTime || att.checkOutTime || "",
+                                                            checkInTime: editedStatus[att._id]?.checkInTime ||"",
+                                                            checkOutTime: editedStatus[att._id]?.checkOutTime ||"",
                                                         })
                                                     }
                                                 >
