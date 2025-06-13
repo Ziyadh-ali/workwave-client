@@ -129,15 +129,15 @@ const AdminAttendancePage = () => {
         }
 
         if (
-            data.checkInTime &&
-            formatTimeString(data.checkInTime) !== formatTimeString(original.checkInTime)
+            data.checkInTime 
+            // formatTimeString(data.checkInTime) !== formatTimeString(original.checkInTime)
         ) {
             updatePayload.checkInTime = data.checkInTime;
         }
 
         if (
-            data.checkOutTime &&
-            formatTimeString(data.checkOutTime) !== formatTimeString(original.checkOutTime)
+            data.checkOutTime 
+            // formatTimeString(data.checkOutTime) !== formatTimeString(original.checkOutTime)
         ) {
             updatePayload.checkOutTime = data.checkOutTime;
         }
@@ -148,7 +148,6 @@ const AdminAttendancePage = () => {
             return;
         }
 
-        alert(updatePayload)
 
         try {
             const response = await updateAttendanceService(id, updatePayload);
@@ -178,14 +177,14 @@ const AdminAttendancePage = () => {
     };
 
     // Utility to compare "HH:mm" time strings with Date object or string
-    const formatTimeString = (value?: string | null): string => {
-        if (!value) return "";
-        try {
-            return format(new Date(value), "HH:mm");
-        } catch {
-            return value; // fallback to raw string if parsing fails
-        }
-    };
+    // const formatTimeString = (value?: string | null): string => {
+    //     if (!value) return "";
+    //     try {
+    //         return format(new Date(value), "HH:mm");
+    //     } catch {
+    //         return value; // fallback to raw string if parsing fails
+    //     }
+    // };
 
     const handleRegularizationAction = async (status: "Approved" | "Rejected") => {
         if (!selectedAttendance) return;
