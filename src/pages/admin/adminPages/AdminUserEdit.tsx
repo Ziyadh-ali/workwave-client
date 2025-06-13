@@ -56,6 +56,7 @@ const AdminEditUserPage = () => {
                 });
 
                 const response = await updateUserService(userId || "", formData);
+                console.log(response);
                 enqueueSnackbar(response.message, { variant: "success" });
                 navigate("/admin/users");
             } catch (error) {

@@ -111,11 +111,11 @@ const EmployeeDashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="flex justify-between mb-2">
-                                <p className="text-sm text-gray-600">Sick Leave</p>
+                                <p className="text-sm text-gray-600">Normal Leave</p>
                                 <p className="text-sm text-gray-800">5 days</p>
                             </div>
                             <div className="flex justify-between mb-4">
-                                <p className="text-sm text-gray-600">Vacation</p>
+                                <p className="text-sm text-gray-600">Parental Leave</p>
                                 <p className="text-sm text-gray-800">10 days</p>
                             </div>
                             <Button onClick={()=>{navigate("/leave")}} variant="outline" className="w-full">
@@ -175,9 +175,9 @@ const EmployeeDashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm font-medium text-gray-800">
-                                Daily Stand-up
+                                No meetings
                             </p>
-                            <p className="text-sm text-gray-600">10:00 AM - 10:30 AM</p>
+                            {/* <p className="text-sm text-gray-600">10:00 AM - 10:30 AM</p> */}
                         </CardContent>
                     </Card>
 
@@ -191,7 +191,7 @@ const EmployeeDashboard = () => {
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-gray-600">Latest Salary</p>
-                            <p className="text-lg font-semibold text-gray-800 mb-2">$4,500</p>
+                            <p className="text-lg font-semibold text-gray-800 mb-2">₹75000</p>
                             <p className="text-sm text-gray-600">Next Payment</p>
                             <p className="text-sm text-gray-800">March 1, 2025</p>
                         </CardContent>
