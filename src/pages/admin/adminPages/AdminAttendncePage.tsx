@@ -148,6 +148,8 @@ const AdminAttendancePage = () => {
             return;
         }
 
+        alert(updatePayload)
+
         try {
             const response = await updateAttendanceService(id, updatePayload);
             enqueueSnackbar(response.message, { variant: "success" });
