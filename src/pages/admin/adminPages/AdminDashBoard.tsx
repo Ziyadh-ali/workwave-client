@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Header } from "../../../components/HeaderComponent";
 import Sidebar from "../../../components/SidebarComponent";
 import { useEffect, useState } from "react";
-import { getAllLeaveRequestsService, getAllPayrollsService, getUsers } from "../../../services/admin/adminService";
+import {  getAllPayrollsService, getEveryLeaveRequestsService, getUsers } from "../../../services/admin/adminService";
 import { NavLink } from "react-router-dom";
 import { ILeaveRequest } from "../../../utils/Interfaces/interfaces";
 
@@ -18,7 +18,7 @@ function AdminDashBoard() {
       setTotalEmployees(response.total);
     }
     const fetchLeaveRequests = async () => {
-      const response = await getAllLeaveRequestsService();
+      const response = await getEveryLeaveRequestsService();
       const pendingCount = response.leaveRequests.filter(req => req.status === "Pending").length;
       setPendingRequests(pendingCount)
       const latestRequests = response.leaveRequests.slice(0, 2);

@@ -1,5 +1,5 @@
 import { adminAxiosInstance } from "../../api/admin.axios";
-import { Employee, EmployeeFilter, ILeaveRequest, IPayroll } from "../../utils/Interfaces/interfaces";
+import { Employee, EmployeeFilter, ILeaveRequest, IPayroll,  } from "../../utils/Interfaces/interfaces";
 
 export const adminLoginService = async (data: { email: string, password: string }) => {
     const response = await adminAxiosInstance.post("/login", data);
@@ -104,6 +104,11 @@ export const getAllLeaveRequestsService = async (
     const response = await adminAxiosInstance.get("/leave/requests", {
         params: { page, limit, status },
     });
+    return response.data;
+}
+
+export const getEveryLeaveRequestsService = async (): Promise<{leaveRequests : ILeaveRequest[]}> => {
+    const response = await adminAxiosInstance.get("/leave/requests/all");
     return response.data;
 }
 
