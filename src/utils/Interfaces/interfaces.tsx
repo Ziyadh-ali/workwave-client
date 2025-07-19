@@ -152,9 +152,7 @@ export interface Employee {
     salary: number;
     salaryType: "hourly" | "monthly";
     createdAt: Date;
-    updatedAt: Date;
 }
-
 
 export interface IGroup {
     _id?: string;
@@ -218,4 +216,36 @@ export interface EmployeeFilter {
     status?: string;
     department?: string;
     [key: string]: string | undefined;
+}
+
+
+export interface LeaveTypes {
+  userId: string;
+  leaveBalances: [
+    {
+      availableDays: number;
+      leaveTypeId: string;
+      leaveTypeName: string;
+      totalDays: number;
+      usedDays: number;
+    }
+  ];
+}
+
+
+export interface LeaveType {
+    _id?: string;
+    name: string;
+    description?: string;
+    maxDaysAllowed: number;
+    isPaid?: boolean;
+    requiresApproval?: boolean;
+}
+
+export interface LeaveRequest {
+    employeeId?: string;
+    leaveTypeId: string;
+    startDate: string;
+    endDate: string;
+    reason: string;
 }

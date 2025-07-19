@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { profileValidationSchema } from "../../../utils/editValidation";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getProfileDetails, updateProfileService } from "../../../services/user/userService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { ErrorBoundary } from 'react-error-boundary';
 import Sidebar from "../../../components/SidebarComponent";
-import { Employee } from "../../../utils/Interfaces/interfaces";
+import { employeeLogin } from "../../../store/slices/employeeSlice";
 
 
 const EditProfilePage = () => {
@@ -18,7 +18,34 @@ const EditProfilePage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { employee } = useSelector((state: RootState) => state.employee);
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Employee | null>(null);
+  const dispatch = useDispatch();
+
+  const originalValueRef = useRef<Partial<typeof formik.values>>({});
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getProfileDetails(employee?._id || "");
+        const values = {
+          fullName: response.details.fullName || "",
+          email: response.details.email || "",
+          phone: response.details.phone.toString() || "",
+          address: response.details.address || "",
+          profilePic: response.details.profilePic || "",
+        };
+        console.log(values)
+        formik.setValues(values);
+        originalValueRef.current = values
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserProfile();
+    // eslint-disable-next-line
+  }, [employee?._id]);
+
 
   const formik = useFormik({
     initialValues: {
@@ -33,17 +60,40 @@ const EditProfilePage = () => {
     onSubmit: async (values, { setSubmitting }) => {
 
       try {
-        const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            formData.append(key, value);
-          }
+        const changedTextFields = Object.entries(values).filter(([key, value]) => {
+          if (key === "profilePic") return false;
+          const original = originalValueRef.current[key as keyof typeof values];
+          return value !== original;
         });
-        console.log(formData);
+
+        const profilePicChanged = typeof values.profilePic !== "string";
+
+        if (changedTextFields.length === 0 && !profilePicChanged) {
+          enqueueSnackbar("No changes made", { variant: "info" });
+          setSubmitting(false);
+          navigate("/profile");
+          return;
+        }
+
+        const formData = new FormData();
+        changedTextFields.forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+
+        if (profilePicChanged && values.profilePic) {
+          formData.append("profilePic", values.profilePic);
+        }
         const employeeId = employee?._id ? employee._id : "";
 
         const response = await updateProfileService(employeeId, formData);
-
+        const data = response.newData;
+        dispatch(employeeLogin({
+          _id: data._id,
+          email: data.email,
+          fullName: data.fullName,
+          profilePic: data.profilePic,
+          role: data.role
+        }));
         enqueueSnackbar(response.message, { variant: "success" });
         navigate("/profile");
       } catch (error) {
@@ -54,30 +104,6 @@ const EditProfilePage = () => {
       }
     },
   });
-
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await getProfileDetails(employee?._id || "");
-        setProfile(response.details);
-        formik.setValues({
-          fullName: response.details.fullName || "",
-          email: response.details.email || "",
-          phone: response.details.phone.toString() || "",
-          address: response.details.address || "",
-          profilePic: response.details.profilePic || "",
-        });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserProfile();
-  // eslint-disable-next-line
-  }, [employee?._id]);
-
 
 
   return (
@@ -133,9 +159,16 @@ const EditProfilePage = () => {
                       alt="Profile Preview"
                       className="object-cover w-full h-full"
                     />
-                  ) : profile?.profilePic ? (
+                  ) : employee?._id ? (
+                    console.log(
+                      `https://res.cloudinary.com/dr0iflvfs/image/upload/${formik.values.profilePic}/user_profiles/employees/${employee?._id}`
+                    ),
                     <img
-                      src={profile.profilePic}
+                      src={
+                        typeof formik.values.profilePic === "string" && formik.values.profilePic !== "" && employee?._id
+                          ? `https://res.cloudinary.com/dr0iflvfs/image/upload/v${formik.values.profilePic}/user_profiles/employees/${employee._id}`
+                          : "https://via.placeholder.com/100"
+                      }
                       alt="Profile Preview"
                       className="object-cover w-full h-full"
                     />

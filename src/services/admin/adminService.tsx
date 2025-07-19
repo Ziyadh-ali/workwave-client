@@ -50,8 +50,17 @@ export const updateUserService = async (userId: string, formData: FormData) => {
 
 }
 
-export const getLeaveTypesService = async () => {
-    const response = await adminAxiosInstance.get("/leave/type");
+export const getLeaveTypesService = async (
+    page: number,
+    limit: number,
+    filterPaid: string) => {
+    const response = await adminAxiosInstance.get("/leave/type", {
+        params: {
+            page,
+            limit,
+            isPaid: filterPaid === "All" ? "" : filterPaid === "Paid" ? true : false,
+        },
+    });
     return response.data;
 
 }
@@ -87,8 +96,14 @@ export const updateLeaveTypeService = async (
     return response.data;
 }
 
-export const getAllLeaveRequestsService = async (): Promise<{ leaveRequests: ILeaveRequest[] | [] }> => {
-    const response = await adminAxiosInstance.get("/leave/requests");
+export const getAllLeaveRequestsService = async (
+    page: number,
+    limit: number,
+    status: string
+): Promise<{ leaveRequests: ILeaveRequest[] | [], totalPages: number }> => {
+    const response = await adminAxiosInstance.get("/leave/requests", {
+        params: { page, limit, status },
+    });
     return response.data;
 }
 
@@ -117,7 +132,7 @@ export const getAllAttendanceService = async (
     return response.data;
 };
 
-export const updateAttendanceService = async (attendanceId: string,data : {
+export const updateAttendanceService = async (attendanceId: string, data: {
     status?: "Present" | "Absent" | "Weekend" | "Holiday" | "Pending",
     checkInTime?: string,
     checkOutTime?: string,
@@ -126,6 +141,27 @@ export const updateAttendanceService = async (attendanceId: string,data : {
         data
     });
     return response.data;
+}
+
+export const adminDeleteFaqService = async (faqId: string) => {
+    const response = await adminAxiosInstance.delete(`/faq/${faqId}`);
+    return response.data;
+}
+export const adminGetFaqService = async (searchQuery?: string) => {
+    const response = await adminAxiosInstance.get(`/faq?search=${searchQuery}`);
+    return response.data;
+}
+
+export const adminAddFaqService = async (data: {
+  topic: string;
+  description: string;
+  questions: {
+    question: string;
+    answer: string;
+  }[]
+}) => {
+  const response = await adminAxiosInstance.post("/faq", data);
+  return response.data;
 }
 
 export const regularizeStatusService = async (attendanceId: string, action: "Approved" | "Rejected", remarks: string) => {

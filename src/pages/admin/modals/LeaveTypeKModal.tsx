@@ -6,21 +6,11 @@ import { Switch } from "../../../components/ui/switch";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSnackbar } from "notistack";
+import { LeaveType } from "../../../utils/Interfaces/interfaces";
 
-// LeaveType interface
-export interface LeaveType {
-  _id?: string;
-  name: string;
-  description?: string;
-  maxDaysAllowed: number;
-  isPaid?: boolean;
-  requiresApproval?: boolean;
-}
-
-// Validation schema for adding/updating leave types
 const leaveTypeSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-  description: Yup.string().optional(),
+  name: Yup.string().trim().required("Name is required"),
+  description: Yup.string().trim().required("Description is required"),
   maxDaysAllowed: Yup.number()
     .min(0, "Max days allowed must be 0 or greater")
     .required("Max days allowed is required"),
@@ -28,7 +18,6 @@ const leaveTypeSchema = Yup.object({
   requiresApproval: Yup.boolean().required(),
 });
 
-// Props for AddLeaveTypeModal
 interface AddLeaveTypeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

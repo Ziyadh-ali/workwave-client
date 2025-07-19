@@ -168,9 +168,9 @@ const EmployeeDashboard = () => {
                     {/* Today's Meetings */}
                     <Card>
                         <CardHeader className="flex justify-between items-center">
-                            <CardTitle className="text-sm text-gray-600">Today's Meetings</CardTitle>
-                            <Button variant="outline" size="sm">
-                                Join
+                            <CardTitle className="text-sm text-gray-600">Meetings</CardTitle>
+                            <Button onClick={()=>{navigate("/meeting")}} variant="outline" size="sm">
+                                See meeting
                             </Button>
                         </CardHeader>
                         <CardContent>
@@ -185,7 +185,7 @@ const EmployeeDashboard = () => {
                     <Card>
                         <CardHeader className="flex justify-between items-center">
                             <CardTitle className="text-sm text-gray-600">Payroll</CardTitle>
-                            <a href="#" className="text-sm text-blue-600 hover:underline">
+                            <a onClick={()=>{navigate("/payroll")}} className="text-sm text-blue-600 hover:underline">
                                 View Details
                             </a>
                         </CardHeader>
@@ -217,7 +217,7 @@ const EmployeeDashboard = () => {
                                     <p className="text-xs text-gray-600">2 new messages</p>
                                 </div>
                             </div>
-                            <Button variant="outline" className="w-full">
+                            <Button onClick={()=>{navigate("/messages")}} variant="outline" className="w-full">
                                 Open Chat
                             </Button>
                         </CardContent>
@@ -236,7 +236,7 @@ const EmployeeDashboard = () => {
                                 Ticket #123: Password Reset
                             </p>
                             <p className="text-sm text-orange-600 mb-4">In Progress</p>
-                            <Button variant="outline" className="w-full">
+                            <Button onClick={()=>{navigate("/help-desk")}} variant="outline" className="w-full">
                                 Get Help
                             </Button>
                         </CardContent>

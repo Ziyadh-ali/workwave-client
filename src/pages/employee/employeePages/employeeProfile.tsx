@@ -13,28 +13,6 @@ import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import { Employee } from "../../../utils/Interfaces/interfaces";
 
-// User interface
-export interface User {
-    _id?: string;
-    fullName: string;
-    email: string;
-    department: string;
-    role: "hr" | "developer" | "projectManager";
-    status: string;
-    password: string;
-    phone?: number;
-    address?: string;
-    joinedAt?: Date;
-    manager?: {
-        _id: string;
-        fullName: string;
-    };
-    profilePic?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-
 const EmployeeProfilePage = () => {
     const naviagte = useNavigate();
     const { employee } = useSelector((state: RootState) => state.employee);
@@ -44,13 +22,12 @@ const EmployeeProfilePage = () => {
         const fetchUsers = async () => {
             try {
                 const response = await getProfileDetails(employee ? employee?._id : "");
-                console.log(response.details)
                 setUser(response.details);
             } catch (error) {
                 console.log(error);
             }
         }
-        fetchUsers()
+        fetchUsers();
     }, [employee]);
 
     const handleChangePass = async (updatedPass: {
@@ -99,8 +76,13 @@ const EmployeeProfilePage = () => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <Avatar className="w-20 h-20 rounded-full overflow-hidden border border-gray-300">
+
                                 <AvatarImage
-                                    src={user?.profilePic || "https://via.placeholder.com/80"}
+                                    src={
+                                        employee?._id
+                                            ? `https://res.cloudinary.com/dr0iflvfs/image/upload/v${user?.profilePic}/user_profiles/employees/${employee._id}`
+                                            : "https://via.placeholder.com/80"
+                                    }
                                     alt={user?.fullName}
                                     className="object-cover w-full h-full"
                                 />
@@ -209,33 +191,7 @@ const EmployeeProfilePage = () => {
                         </Card>
 
                         {/* Recent Activities */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-sm text-gray-600">
-                                    Recent Activities
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-gray-800">
-                                        Clocked In
-                                    </p>
-                                    <span className="text-xs text-gray-600">March 24, 2025</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-gray-800">
-                                        Leave Request Submitted
-                                    </p>
-                                    <span className="text-xs text-gray-600">March 20, 2025</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-gray-800">
-                                        Task Completed
-                                    </p>
-                                    <span className="text-xs text-gray-600">March 18, 2025</span>
-                                </div>
-                            </CardContent>
-                        </Card>
+
                     </div>
 
                     {/* Right Section */}
@@ -264,16 +220,6 @@ const EmployeeProfilePage = () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-gray-800">
-                                        Last Login
-                                    </p>
-                                    <span className="text-sm text-gray-800">
-                                        {user?.updatedAt
-                                            ? new Date(user?.updatedAt).toLocaleDateString()
-                                            : "Not provided"}
-                                    </span>
-                                </div>
                                 <div className="flex items-center justify-between">
                                     <p className="text-sm font-medium text-gray-800">
                                         Account Created

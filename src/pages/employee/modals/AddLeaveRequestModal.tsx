@@ -5,29 +5,14 @@ import { Label } from "../../../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import { getAllLeaveTypesService } from "../../../services/user/userService";
+import {  getEveryLeaveTypesService } from "../../../services/user/userService";
 import { enqueueSnackbar } from "notistack";
 import { AxiosError } from "axios";
 import { leaveRequestSchema } from "../../../utils/leaveRequest.validation";
+import { LeaveRequest, LeaveType } from "../../../utils/Interfaces/interfaces";
 
-// LeaveType interface (for selecting leave types)
-export interface LeaveType {
-    _id?: string;
-    name: string;
-    description?: string;
-    maxDaysAllowed: number;
-    isPaid?: boolean;
-    requiresApproval?: boolean;
-}
 
 // Interface for the leave request data
-export interface LeaveRequest {
-    employeeId?: string;
-    leaveTypeId: string;
-    startDate: string;
-    endDate: string;
-    reason: string;
-}
 
 // Props for the AddLeaveRequestModal
 interface AddLeaveRequestModalProps {
@@ -43,8 +28,8 @@ const AddLeaveRequestModal = ({ open, onClose, onAdd }: AddLeaveRequestModalProp
     useEffect(() => {
         const fetchLeaveTypes = async () => {
             try {
-                const response = await getAllLeaveTypesService();
-                setLeaveTypes(response.data);
+                const response = await getEveryLeaveTypesService();
+                setLeaveTypes(response.leaveTypes);
             } catch (error) {
                 console.log("error in fethcing leave types", error);
             }

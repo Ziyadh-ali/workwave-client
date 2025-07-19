@@ -25,6 +25,8 @@ export const Header: React.FC<Props> = ({ heading, role }) => {
     const navigate = useNavigate();
     const { employee } = useSelector((state: RootState) => state.employee);
 
+
+
     const handleLogout = async () => {
         try {
             if (role === "employee") {
@@ -51,7 +53,7 @@ export const Header: React.FC<Props> = ({ heading, role }) => {
             <div className="flex items-center space-x-4">
                 {/* Notification Dropdown */}
                 <NotificationDropdown />
-                
+
                 {/* User Avatar and Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -60,8 +62,8 @@ export const Header: React.FC<Props> = ({ heading, role }) => {
                                 {role === "employee" ? (
                                     <AvatarImage
                                         src={
-                                            employee && employee?.profilePic?.length > 0
-                                                ? employee?.profilePic
+                                            employee?.profilePic
+                                                ? `https://res.cloudinary.com/dr0iflvfs/image/upload/v${employee.profilePic}/user_profiles/employees/${employee._id}.jpg?timestamp=${Date.now()}`
                                                 : "https://via.placeholder.com/40"
                                         }
                                         alt="Profile"

@@ -4,10 +4,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-// Assume these are the services for fetching and updating user data
 import { validationSchema } from "../../../utils/editValidation";
 import { getManagers, getUserDetails, updateUserService } from "../../../services/admin/adminService";
 import Sidebar from "../../../components/SidebarComponent";
@@ -24,55 +23,14 @@ const AdminEditUserPage = () => {
     const [Managers, setManagers] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Formik setup
-    const formik = useFormik({
-        initialValues: {
-            fullName: "",
-            email: "",
-            department: "",
-            role: "" as "hr" | "developer" | "projectManager",
-            status: "",
-            phone: "",
-            address: "",
-            salary: "",
-            manager: "",
-            joinedAt: "",
-            profilePic: null as File | null,
-        },
-        validationSchema: validationSchema,
-        enableReinitialize: true,
-        onSubmit: async (values, { setSubmitting }) => {
-            try {
-                const formData = new FormData();
-                Object.entries(values).forEach(([key, value]) => {
-                    if (value !== null && value !== undefined && value !== "") {
-                        if (key === "joinedAt" && typeof value === "string") {
-                            formData.append(key, new Date(value).toISOString());
-                        } else if (value instanceof File) {
-                            formData.append(key, value);
-                        } else {
-                            formData.append(key, value );
-                        }
-                    }
-                });
-
-                const response = await updateUserService(userId || "", formData);
-                enqueueSnackbar(response.message, { variant: "success" });
-                navigate("/admin/users");
-            } catch (error) {
-                enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "An error occurred during submission", { variant: "error" });
-            } finally {
-                setSubmitting(false);
-            }
-        },
-    });
+    const originalValueRef = useRef<Partial<typeof formik.values>>({});
 
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
                 const response = await getUserDetails(userId || "");
                 if (response.user) {
-                    formik.setValues({
+                    const values = {
                         fullName: response.user.fullName || "",
                         email: response.user.email || "",
                         department: response.user.department || "",
@@ -81,12 +39,13 @@ const AdminEditUserPage = () => {
                         phone: response.user.phone ? response.user.phone.toString() : "",
                         address: response.user.address || "",
                         manager: response.user.manager || "",
-                        salary : response.user.salary || "",
+                        salary: response.user.salary || "",
                         joinedAt: response.user.joinedAt
                             ? new Date(response.user.joinedAt).toISOString().split("T")[0]
                             : "",
-                        profilePic: null,
-                    });
+                    }
+                    formik.setValues(values);
+                    originalValueRef.current = values;
                 }
             } catch (error) {
                 console.error(error);
@@ -109,6 +68,58 @@ const AdminEditUserPage = () => {
 
         //eslint-disable-next-line
     }, [userId]);
+
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            fullName: "",
+            email: "",
+            department: "",
+            role: "" as "hr" | "developer" | "projectManager",
+            status: "",
+            phone: "",
+            address: "",
+            salary: "",
+            manager: "",
+            joinedAt: "",
+        },
+        validationSchema: validationSchema,
+        enableReinitialize: true,
+        onSubmit: async (values, { setSubmitting }) => {
+            try {
+                const changedEntries = Object.entries(values).filter(([key, value]) => {
+                    const typedKey = key as keyof typeof values;
+                    return value !== originalValueRef.current[typedKey];
+                });
+                if (changedEntries.length === 0) {
+                    enqueueSnackbar("No changes made", { variant: "info" });
+                    setSubmitting(false);
+                    navigate("/admin/users");
+                    return;
+                }
+
+                const formData = new FormData();
+                changedEntries.forEach(([key, value]) => {
+                    if (value !== null && value !== undefined && value !== "") {
+                        if (key === "joinedAt" && typeof value === "string") {
+                            formData.append(key, new Date(value).toISOString());
+                        } else {
+                            formData.append(key, value);
+                        }
+                    }
+                });
+
+                const response = await updateUserService(userId || "", formData);
+                enqueueSnackbar(response.message, { variant: "success" });
+                navigate("/admin/users");
+            } catch (error) {
+                enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "An error occurred during submission", { variant: "error" });
+            } finally {
+                setSubmitting(false);
+            }
+        },
+    });
+
 
     return (
         <ErrorBoundary
@@ -241,7 +252,7 @@ const AdminEditUserPage = () => {
                                     <div className="text-red-500 text-sm">{formik.errors.joinedAt}</div>
                                 )}
                             </div>
-                            <div>
+                            {/* <div>
                                 <label className="text-sm font-medium text-gray-700">Profile Picture</label>
                                 <input
                                     type="file"
@@ -254,7 +265,7 @@ const AdminEditUserPage = () => {
                                 {formik.touched.profilePic && formik.errors.profilePic && (
                                     <div className="text-red-500 text-sm">{formik.errors.profilePic}</div>
                                 )}
-                            </div>
+                            </div> */}
                             <div className="flex justify-end space-x-4">
                                 <Button
                                     type="button"

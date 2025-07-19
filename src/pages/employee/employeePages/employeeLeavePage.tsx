@@ -16,9 +16,7 @@ import {
 } from "../../../services/user/userService";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import AddLeaveRequestModal, {
-  LeaveRequest,
-} from "../modals/AddLeaveRequestModal";
+import AddLeaveRequestModal from "../modals/AddLeaveRequestModal";
 import { enqueueSnackbar } from "notistack";
 import { AxiosError } from "axios";
 import ShadTable from "../../../components/TableComponent";
@@ -27,61 +25,38 @@ import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../../../context/SocketContext";
+import { ILeaveRequest, LeaveRequest, LeaveTypes } from "../../../utils/Interfaces/interfaces";
 
-// User interface
-export interface User {
-  _id?: string;
-  fullName: string;
-  email: string;
-  department: string;
-  role: "hr" | "developer" | "projectManager";
-  status: string;
-  password: string;
-  phone?: number;
-  address?: string;
-  joinedAt?: Date;
-  manager?: string;
-  profilePic?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-// Interface for leave data
-interface Leave {
-  _id: string;
-  leaveTypeId: {
-    name: string;
-    _id: string;
-  };
-  startDate: string;
-  endDate: string;
-  reason: string;
-  status: "Approved" | "Rejected" | "Pending" | "Cancelled";
-  rejectionReason: string;
-}
-
-interface LeaveTypes {
-  userId: string;
-  leaveBalances: [
-    {
-      availableDays: number;
-      leaveTypeId: string;
-      leaveTypeName: string;
-      totalDays: number;
-      usedDays: number;
-    }
-  ];
-}
 
 const LeavePage = () => {
   const naviagte = useNavigate();
   const location = useLocation();
   const [leaveTypes, setLeaveTypes] = useState<LeaveTypes>();
   const { confirm, ConfirmModalComponent } = useConfirmModal();
-  const [leaveHistory, setLeaveHistory] = useState<Leave[]>([]);
+  const [leaveHistory, setLeaveHistory] = useState<ILeaveRequest[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const { employee } = useSelector((state: RootState) => state.employee);
-  const {sendLeaveRequestApplied} = useSocket() 
+  const { sendLeaveRequestApplied } = useSocket();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 3;
+
+  const fetchLeaveHistory = async () => {
+    if (employee?._id) {
+      const response = await getLeaveRequestsService(
+        employee._id,
+        currentPage,
+        rowsPerPage,
+        searchTerm,
+        statusFilter === "All" ? "" : statusFilter
+      );
+      console.log(response)
+      setLeaveHistory(response.leaveRequests);
+      setTotalPages(response.totalPages);
+    }
+  };
 
   useEffect(() => {
     const fethchLeaveBalance = async () => {
@@ -90,30 +65,25 @@ const LeavePage = () => {
         setLeaveTypes(response.leaveBalances);
       }
     };
-    const fetchLeaveHistory = async () => {
-      if (employee?._id) {
-        const response = await getLeaveRequestsService(employee._id);
-        setLeaveHistory(response.leaveRequests);
-      }
-    };
     fethchLeaveBalance();
     fetchLeaveHistory();
-  }, [employee?._id, location]);
+
+    //eslint-disable-next-line
+  }, [employee?._id, currentPage, searchTerm, statusFilter, location]);
+
 
   const handleLeaveAdd = async (data: LeaveRequest) => {
     const newData = { ...data, employeeId: employee?._id };
     const response = await addLeaveRequestService(newData);
-    console.log(response)
     sendLeaveRequestApplied({
-      employeeId : response.leaveRequest.employeeId._id,
-      employeeName : employee?.fullName ? employee?.fullName : "",
-      leaveId : response.leaveRequest._id,
-      managerId : response.leaveRequest.assignedManager || "67d3fb40609f7c890f6eb579",
+      employeeId: response.leaveRequest.employeeId._id,
+      employeeName: employee?.fullName ? employee?.fullName : "",
+      leaveId: response.leaveRequest._id,
+      managerId: response.leaveRequest.assignedManager || "67d3fb40609f7c890f6eb579",
     })
     setOpenModal(false);
 
-    const updated = await getLeaveRequestsService(employee!._id);
-    setLeaveHistory(updated.leaveRequests);
+    await fetchLeaveHistory();
   };
 
   const handleDelete = async (leaveRequestId: string) => {
@@ -171,23 +141,23 @@ const LeavePage = () => {
   const leaveColumns = [
     {
       header: "Leave Type",
-      accessor: (row: Leave) => row.leaveTypeId.name,
+      accessor: (row: ILeaveRequest) => row.leaveTypeId.name,
     },
     {
       header: "Start Date",
-      accessor: (row: Leave) => formatDate(row.startDate),
+      accessor: (row: ILeaveRequest) => formatDate(row.startDate),
     },
     {
       header: "End Date",
-      accessor: (row: Leave) => formatDate(row.endDate),
+      accessor: (row: ILeaveRequest) => formatDate(row.endDate),
     },
     {
       header: "Reason",
-      accessor: (row: Leave) => row.reason,
+      accessor: (row: ILeaveRequest) => row.reason,
     },
     {
       header: "Status",
-      accessor: (row: Leave) => (
+      accessor: (row: ILeaveRequest) => (
         <span
           className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${row.status === "Approved"
             ? "bg-green-100 text-green-600"
@@ -202,7 +172,7 @@ const LeavePage = () => {
     },
     {
       header: "Actions",
-      accessor: (row: Leave) => {
+      accessor: (row: ILeaveRequest) => {
         if (row.status === "Pending") {
           return (
             <Button
@@ -228,7 +198,7 @@ const LeavePage = () => {
         } else if (row.status === "Rejected") {
           return (
             <span className="text-sm text-red-600">
-              Reason: {row.rejectionReason || "No reason provided"}
+              Reason: {row.reason || "No reason provided"}
             </span>
           );
         } else {
@@ -294,6 +264,34 @@ const LeavePage = () => {
           </div>
 
           {/* Card Wrapping Table */}
+          <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+            {/* Search input */}
+            <input
+              type="text"
+              placeholder="Search by reason or leave type"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="p-2 border rounded"
+            />
+
+            {/* Status filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="p-2 border rounded"
+            >
+              <option value="All">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
           <Card className="shadow-md p-4">
             <CardContent className="p-0">
               <ShadTable
@@ -304,8 +302,28 @@ const LeavePage = () => {
               />
             </CardContent>
           </Card>
+
+          <div className="flex gap-2 mt-4">
+            <Button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              variant="outline"
+              size="sm"
+            >
+              Previous
+            </Button>
+            <Button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              variant="outline"
+              size="sm"
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
+
 
       <ConfirmModalComponent />
     </div>

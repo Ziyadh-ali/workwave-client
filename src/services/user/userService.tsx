@@ -18,7 +18,7 @@ export const logoutService = async () => {
   return response.data;
 }
 
-export const getProfileDetails = async (userId: string) : Promise<{details : Employee}> => {
+export const getProfileDetails = async (userId: string): Promise<{ details: Employee }> => {
   const response = await employeeAxiosInstance.get(`/profile/${userId}`);
   return response.data;
 }
@@ -48,21 +48,33 @@ export const getAllLeaveTypesService = async () => {
   const response = await employeeAxiosInstance.get("/leave/types");
   return response.data;
 }
+export const getEveryLeaveTypesService = async () => {
+  const response = await employeeAxiosInstance.get("/leave/types/request");
+  return response.data;
+}
 
 export const addLeaveRequestService = async (data: {
   leaveTypeId: string;
   startDate: string;
   endDate: string;
   reason: string;
-}) : Promise<{message : string , leaveRequest : ILeaveRequest}> =>  {
+}): Promise<{ message: string, leaveRequest: ILeaveRequest }> => {
   const response = await employeeAxiosInstance.post("/leave/request", {
     data,
   })
   return response.data
 }
 
-export const getLeaveRequestsService = async (userId: string) => {
-  const response = await employeeAxiosInstance.get(`/leave/request/${userId}`);
+export const getLeaveRequestsService = async (
+  employeeId: string,
+  page: number,
+  limit: number,
+  search: string,
+  status: string
+) => {
+  const response = await employeeAxiosInstance.get(`/leave/request/${employeeId}`, {
+    params: { page, limit, search, status },
+  });
   return response.data;
 }
 
@@ -122,7 +134,7 @@ export const scheduleMeetingService = async (meeting: {
   date: string;
   startTime: string;
   duration: number;
-}, filter: { role?: string, department?: string }) : Promise<{message : string , createdMeeting : IMeeting}> => {
+}, filter: { role?: string, department?: string }): Promise<{ message: string, createdMeeting: IMeeting }> => {
   const response = await employeeAxiosInstance.post("/meeting", {
     meeting, filter
   });
@@ -134,7 +146,7 @@ export const getMeetingsService = async (employeeId: string) => {
   return response.data;
 }
 
-export const addMeetingLinkService = async (meetingId: string, link: string) : Promise<{message : string , meeting : IMeeting}> => {
+export const addMeetingLinkService = async (meetingId: string, link: string): Promise<{ message: string, meeting: IMeeting }> => {
   const response = await employeeAxiosInstance.patch(`/meeting/${meetingId}/link`, { link });
   return response.data;
 }
@@ -313,61 +325,61 @@ export const addGroupMembersService = async (
 };
 
 export const getEmployeePayslipsService = async (employeeId: string) => {
-    const response = await employeeAxiosInstance.get(`/payslip/${employeeId}`);
-    return response.data;
+  const response = await employeeAxiosInstance.get(`/payslip/${employeeId}`);
+  return response.data;
 };
 
-export const downloadPayslipService = async (employeeId: string , month : number , year : number) => {
-    const response = await employeeAxiosInstance.get(`/payslip/download/pdf?employeeId=${employeeId}&month=${month}&year=${year}`,
-      {
-        responseType: 'blob',
-      }
-    );
-    return response.data;
+export const downloadPayslipService = async (employeeId: string, month: number, year: number) => {
+  const response = await employeeAxiosInstance.get(`/payslip/download/pdf?employeeId=${employeeId}&month=${month}&year=${year}`,
+    {
+      responseType: 'blob',
+    }
+  );
+  return response.data;
 };
 
 export const getUsersForManagers = async (
-    filter: EmployeeFilter,
-    page: number,
-    pageSize: number,
+  filter: EmployeeFilter,
+  page: number,
+  pageSize: number,
 ): Promise<{ data: Employee[], total: number, active: number, inactive: number, page: number, pageSize: number }> => {
-    const response = await employeeAxiosInstance.get(`/users?page=${page}&pageSize=${pageSize}`, {
-        params: { ...filter }
-    });
-    return response.data;
+  const response = await employeeAxiosInstance.get(`/users?page=${page}&pageSize=${pageSize}`, {
+    params: { ...filter }
+  });
+  return response.data;
 }
 
 export const deleteUserForManagers = async (id: string) => {
-    const response = await employeeAxiosInstance.delete(`/users/${id}`);
-    return response.data;
+  const response = await employeeAxiosInstance.delete(`/users/${id}`);
+  return response.data;
 }
 
 export const addUserForManagers = async (userData: {
-    fullName: string;
-    email: string;
-    role: string;
-    department: string;
-    password: string;
-    salary: number;
+  fullName: string;
+  email: string;
+  role: string;
+  department: string;
+  password: string;
+  salary: number;
 }) => {
-    const response = await employeeAxiosInstance.post("/users", { userData });
-    return response.data;
+  const response = await employeeAxiosInstance.post("/users", { userData });
+  return response.data;
 }
 
-export const getAllLeaveRequestsForManagerService = async () : Promise<{leaveRequests : ILeaveRequest[] | []}> => {
-    const response = await employeeAxiosInstance.get("/leave/requests");
-    return response.data;
+export const getAllLeaveRequestsForManagerService = async (): Promise<{ leaveRequests: ILeaveRequest[] | [] }> => {
+  const response = await employeeAxiosInstance.get("/leave/requests");
+  return response.data;
 }
 
 export const updateLeaveRequestStatusForManagerService = async (leaveRequestId: string, status: "Approved" | "Rejected", reason?: string) => {
-    const response = await employeeAxiosInstance.patch(`/leave/requests/${leaveRequestId}`, {
-        status,
-        reason
-    }, {
-        headers: {
-            "Content-Type": "application/json"
-        }
+  const response = await employeeAxiosInstance.patch(`/leave/requests/${leaveRequestId}`, {
+    status,
+    reason
+  }, {
+    headers: {
+      "Content-Type": "application/json"
     }
-    );
-    return response.data;
+  }
+  );
+  return response.data;
 }

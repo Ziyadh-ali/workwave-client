@@ -44,7 +44,7 @@ export const validationSchema = Yup.object({
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
     .required("Phone is required"),
-  address: Yup.string().optional(),
+  address: Yup.string().optional().min(5 , "Address must be 5 character long"),
   manager: Yup.string().optional(),
-  joinedAt: Yup.date().optional(),  
+  joinedAt: Yup.date().optional().max(new Date() , "No future date will be allowed"),  
 });

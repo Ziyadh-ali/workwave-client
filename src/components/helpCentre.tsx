@@ -17,7 +17,7 @@ import { Header } from "./HeaderComponent";
 import Sidebar from "./SidebarComponent";
 import { IQuestion } from "../utils/Interfaces/interfaces";
 import { SubmitQuestionModal } from "../pages/employee/modals/SubmitQuestionModal";
-import { getQuestionsForAdminService } from "../services/admin/adminService";
+import { adminAddFaqService, adminGetFaqService, getQuestionsForAdminService } from "../services/admin/adminService";
 import AnswerQuestionModal from "../pages/employee/modals/AnswerQuestionModal";
 
 interface FAQCategory {
@@ -54,7 +54,12 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
 
     useEffect(() => {
         const fetchFaqs = async () => {
-            const response = await getFaqService(searchQuery);
+            let response
+            if (role === "admin") {
+                response = await adminGetFaqService(searchQuery);
+            } else {
+                response = await getFaqService(searchQuery);
+            }
             setFaqs(response.faqs);
         };
 
@@ -83,7 +88,7 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
         fetchFaqs();
         fetchMyQuestions();
         fetchUserQuestions();
-    }, [searchQuery, location]);
+    }, [searchQuery, location , employee?._id , role]);
 
     const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) return text;
@@ -104,9 +109,11 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
             answer: string;
         }[];
     }) => {
-        await addFaqService(data);
-        const response = await getFaqService(searchQuery);
-        setFaqs(response.faqs);
+        if (role === "admin") {
+            await adminAddFaqService(data);
+        } else {
+            await addFaqService(data);
+        }
         navigate(role === "employee" ? "/help-desk" : "/admin/help");
     };
 

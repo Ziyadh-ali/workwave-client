@@ -10,15 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useConfirmModal } from "../../../components/useConfirm";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
+import { LeaveType } from "../../../utils/Interfaces/interfaces";
 
-export interface LeaveType {
-    _id?: string;
-    name: string;
-    description?: string;
-    maxDaysAllowed: number;
-    isPaid?: boolean;
-    requiresApproval?: boolean;
-}
 const LeaveTypeManagementPage = () => {
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar();
@@ -27,21 +20,33 @@ const LeaveTypeManagementPage = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedLeaveType, setSelectedLeaveType] = useState<LeaveType | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [filterPaid, setFilterPaid] = useState("All");
+    const [searchTerm, setSearchTerm] = useState("");
 
-    // Fetch leave types on mount
+    const rowsPerPage = 2;
+
+    const fetchLeaveTypes = async () => {
+        try {
+            const data = await getLeaveTypesService(currentPage, rowsPerPage, filterPaid);
+            console.log(data)
+            setLeaveTypes(data.leaveTypes);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.error("Failed to fetch leave types:", error);
+            enqueueSnackbar("Failed to fetch leave types", { variant: "error" });
+        }
+    };
+
     useEffect(() => {
-        const fetchLeaveTypes = async () => {
-            try {
-                const data = await getLeaveTypesService();
-                setLeaveTypes(data.data);
-            } catch (error) {
-                console.error("Failed to fetch leave types:", error);
-                enqueueSnackbar("Failed to fetch leave types", { variant: "error" });
-            }
-        };
         fetchLeaveTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage , filterPaid]);
+
+    const filteredLeaveTypes = (leaveTypes || []).filter((lt) =>
+        lt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleAddLeaveType = async (leaveType: Omit<LeaveType, "_id">) => {
         try {
@@ -110,8 +115,31 @@ const LeaveTypeManagementPage = () => {
                         />
                     </CardHeader>
 
+                    <CardContent className="flex flex-col sm:flex-row justify-between mb-4 gap-4">
+                        <input
+                            type="text"
+                            placeholder="Search by name..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="p-2 border rounded w-full sm:w-1/2"
+                        />
+
+                        <select
+                            value={filterPaid}
+                            onChange={(e) => {
+                                setFilterPaid(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="p-2 border rounded w-full sm:w-1/4"
+                        >
+                            <option value="All">All</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                        </select>
+                    </CardContent>
+
                     <CardContent>
-                        {leaveTypes.length > 0 ? (
+                        {filteredLeaveTypes.length > 0 ? (
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -124,7 +152,7 @@ const LeaveTypeManagementPage = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {leaveTypes.map((leaveType) => (
+                                    {filteredLeaveTypes.map((leaveType) => (
                                         <TableRow key={leaveType._id as string}>
                                             <TableCell>{leaveType.name}</TableCell>
                                             <TableCell>{leaveType.description || "N/A"}</TableCell>
@@ -156,6 +184,30 @@ const LeaveTypeManagementPage = () => {
                         ) : (
                             <h1>No Leave Types</h1>
                         )}
+                    </CardContent>
+
+                    <CardContent className="flex justify-between items-center mt-4">
+                        <p className="text-sm text-gray-500">
+                            Page {currentPage} of {totalPages}
+                        </p>
+                        <div className="flex gap-2">
+                            <Button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                size="sm"
+                                variant="outline"
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                size="sm"
+                                variant="outline"
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
