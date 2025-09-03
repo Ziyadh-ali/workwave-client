@@ -1,8 +1,5 @@
 import { employeeAxios } from "../api/axios";
 
-
-
-
 export const uploadToCloudinary = async (file: File): Promise<{url : string , type : "image" | "video" | "document"}> => {
     const formData = new FormData();
     formData.append("file", file);
