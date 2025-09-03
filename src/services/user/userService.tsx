@@ -1,7 +1,7 @@
 import axios from "axios";
-import { employeeAxiosInstance } from "../../api/employee.axios";
 import { EditMeeting } from "../../pages/employee/modals/editMeetingModal";
 import { Employee, EmployeeFilter, IGroup, ILeaveRequest, IMeeting } from "../../utils/Interfaces/interfaces";
+import { employeeAxios } from "../../api/axios";
 
 
 
@@ -9,29 +9,29 @@ export const employeeLoginService = async (data: {
   email: string,
   password: string,
 }) => {
-  const response = await employeeAxiosInstance.post("/login", data);
+  const response = await employeeAxios.post("/login", data);
   return response.data;
 }
 
 export const logoutService = async () => {
-  const response = await employeeAxiosInstance.post("/logout");
+  const response = await employeeAxios.post("/logout");
   return response.data;
 }
 
 export const getProfileDetails = async (userId: string): Promise<{ details: Employee }> => {
-  const response = await employeeAxiosInstance.get(`/profile/${userId}`);
+  const response = await employeeAxios.get(`/profile/${userId}`);
   return response.data;
 }
 
 export const updateProfileService = async (userId: string, formData: FormData) => {
-  const response = await employeeAxiosInstance.patch(`profile/${userId}`, formData, {
+  const response = await employeeAxios.patch(`profile/${userId}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data;
 };
 
 export const changePasswordService = async (userId: string, currentPassword: string, newPassword: string) => {
-  const response = await employeeAxiosInstance.patch(`profile/${userId}/password`, {
+  const response = await employeeAxios.patch(`profile/${userId}/password`, {
     currentPassword,
     newPassword,
   });
@@ -40,16 +40,16 @@ export const changePasswordService = async (userId: string, currentPassword: str
 }
 
 export const getLeaveBalancesService = async (userId: string) => {
-  const response = await employeeAxiosInstance.get(`/leave/balance/${userId}`);
+  const response = await employeeAxios.get(`/leave/balance/${userId}`);
   return response.data;
 }
 
 export const getAllLeaveTypesService = async () => {
-  const response = await employeeAxiosInstance.get("/leave/types");
+  const response = await employeeAxios.get("/leave/types");
   return response.data;
 }
 export const getEveryLeaveTypesService = async () => {
-  const response = await employeeAxiosInstance.get("/leave/types/request");
+  const response = await employeeAxios.get("/leave/types/request");
   return response.data;
 }
 
@@ -59,7 +59,7 @@ export const addLeaveRequestService = async (data: {
   endDate: string;
   reason: string;
 }): Promise<{ message: string, leaveRequest: ILeaveRequest }> => {
-  const response = await employeeAxiosInstance.post("/leave/request", {
+  const response = await employeeAxios.post("/leave/request", {
     data,
   })
   return response.data
@@ -72,19 +72,19 @@ export const getLeaveRequestsService = async (
   search: string,
   status: string
 ) => {
-  const response = await employeeAxiosInstance.get(`/leave/request/${employeeId}`, {
+  const response = await employeeAxios.get(`/leave/request/${employeeId}`, {
     params: { page, limit, search, status },
   });
   return response.data;
 }
 
 export const deleteLeaveRequest = async (leaveRequestId: string) => {
-  const response = await employeeAxiosInstance.delete(`/leave/request/${leaveRequestId}`);
+  const response = await employeeAxios.delete(`/leave/request/${leaveRequestId}`);
   return response.data;
 }
 
 export const forgotPasswordService = async (email: string) => {
-  const response = await employeeAxiosInstance.post("/forgot-password", { email }, {
+  const response = await employeeAxios.post("/forgot-password", { email }, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -92,7 +92,7 @@ export const forgotPasswordService = async (email: string) => {
   return response.data;
 }
 export const resetPasswordService = async (token: string, newPassword: string) => {
-  const response = await employeeAxiosInstance.post("/reset-password", {
+  const response = await employeeAxios.post("/reset-password", {
     token,
     newPassword,
   }, {
@@ -104,22 +104,22 @@ export const resetPasswordService = async (token: string, newPassword: string) =
 }
 
 export const checkInService = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.post(`/attendance/${employeeId}`);
+  const response = await employeeAxios.post(`/attendance/${employeeId}`);
   return response.data;
 }
 
 export const checkOutService = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.patch(`/attendance/${employeeId}`);
+  const response = await employeeAxios.patch(`/attendance/${employeeId}`);
   return response.data;
 }
 
 export const getTodayAttendance = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.get(`/attendance/${employeeId}`);
+  const response = await employeeAxios.get(`/attendance/${employeeId}`);
   return response.data;
 }
 
 export const fetchAttendanceDataService = async (employeeId: string, year: number, month: number) => {
-  const response = await employeeAxiosInstance.get(`/attendance/month/${employeeId}`, {
+  const response = await employeeAxios.get(`/attendance/month/${employeeId}`, {
     params: {
       year,
       month,
@@ -135,34 +135,34 @@ export const scheduleMeetingService = async (meeting: {
   startTime: string;
   duration: number;
 }, filter: { role?: string, department?: string }): Promise<{ message: string, createdMeeting: IMeeting }> => {
-  const response = await employeeAxiosInstance.post("/meeting", {
+  const response = await employeeAxios.post("/meeting", {
     meeting, filter
   });
   return response.data;
 }
 
 export const getMeetingsService = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.get(`/meeting/${employeeId}`);
+  const response = await employeeAxios.get(`/meeting/${employeeId}`);
   return response.data;
 }
 
 export const addMeetingLinkService = async (meetingId: string, link: string): Promise<{ message: string, meeting: IMeeting }> => {
-  const response = await employeeAxiosInstance.patch(`/meeting/${meetingId}/link`, { link });
+  const response = await employeeAxios.patch(`/meeting/${meetingId}/link`, { link });
   return response.data;
 }
 
 export const changeMeetingStatusService = async (meetingId: string) => {
-  const response = await employeeAxiosInstance.patch(`/meeting/${meetingId}/status`, { status: "completed" });
+  const response = await employeeAxios.patch(`/meeting/${meetingId}/status`, { status: "completed" });
   return response.data;
 }
 
 export const deleteMeetingService = async (meetingId: string) => {
-  const response = await employeeAxiosInstance.delete(`/meeting/${meetingId}`);
+  const response = await employeeAxios.delete(`/meeting/${meetingId}`);
   return response.data;
 }
 
 export const editMeetingService = async (meetingId: string, updatedMeeting: Partial<EditMeeting>, filter: { role?: string, department?: string }) => {
-  const response = await employeeAxiosInstance.patch(`/meeting/${meetingId}`, { meeting: updatedMeeting, filter });
+  const response = await employeeAxios.patch(`/meeting/${meetingId}`, { meeting: updatedMeeting, filter });
   return response.data;
 }
 
@@ -174,7 +174,7 @@ export const addFaqService = async (data: {
     answer: string;
   }[]
 }) => {
-  const response = await employeeAxiosInstance.post("/faq", data);
+  const response = await employeeAxios.post("/faq", data);
   return response.data;
 }
 export const editFaqService = async (faqId: string, updatedData: Partial<{
@@ -185,35 +185,35 @@ export const editFaqService = async (faqId: string, updatedData: Partial<{
     answer: string;
   }[]
 }>) => {
-  const response = await employeeAxiosInstance.patch(`/faq/${faqId}`, { updatedData });
+  const response = await employeeAxios.patch(`/faq/${faqId}`, { updatedData });
   return response.data;
 }
 
 export const deleteFaqService = async (faqId: string) => {
-  const response = await employeeAxiosInstance.delete(`/faq/${faqId}`);
+  const response = await employeeAxios.delete(`/faq/${faqId}`);
   return response.data;
 }
 export const getFaqService = async (searchQuery?: string) => {
-  const response = await employeeAxiosInstance.get(`/faq?search=${searchQuery}`);
+  const response = await employeeAxios.get(`/faq?search=${searchQuery}`);
   return response.data;
 }
 
 export const getEmployeesForChatService = async () => {
-  const response = await employeeAxiosInstance.get("/employees");
+  const response = await employeeAxios.get("/employees");
   return response.data;
 }
 
 export const getDeveloperService = async () => {
-  const response = await employeeAxiosInstance.get("/developers");
+  const response = await employeeAxios.get("/developers");
   return response.data;
 }
 
 export const getPrivateMessagesService = async (user1: string, user2: string) => {
-  const response = await employeeAxiosInstance.get(`/messages?user1=${user1}&user2=${user2}`);
+  const response = await employeeAxios.get(`/messages?user1=${user1}&user2=${user2}`);
   return response.data;
 }
 export const getGroupMessagesService = async (roomId: string) => {
-  const response = await employeeAxiosInstance.get(`/messages/${roomId}`);
+  const response = await employeeAxios.get(`/messages/${roomId}`);
   return response.data;
 }
 interface ProjectData {
@@ -224,32 +224,32 @@ interface ProjectData {
 }
 
 export const cretaeProjectService = async (data: ProjectData) => {
-  const response = await employeeAxiosInstance.post("/projects ", { data });
+  const response = await employeeAxios.post("/projects ", { data });
   return response.data;
 }
 
 export const deleteProjectService = async (projectId: string) => {
-  const response = await employeeAxiosInstance.delete(`/projects/${projectId}`);
+  const response = await employeeAxios.delete(`/projects/${projectId}`);
   return response.data;
 }
 
 export const updateProjectService = async (projectId: string, updatedData: Partial<ProjectData>) => {
-  const response = await employeeAxiosInstance.patch(`/projects/${projectId}`, { updatedData });
+  const response = await employeeAxios.patch(`/projects/${projectId}`, { updatedData });
   return response.data;
 }
 
 export const getProjectService = async (projectId: string) => {
-  const response = await employeeAxiosInstance.get(`/projects/${projectId}`);
+  const response = await employeeAxios.get(`/projects/${projectId}`);
   return response.data;
 }
 
 export const getProjectsService = async () => {
-  const response = await employeeAxiosInstance.get("/projects");
+  const response = await employeeAxios.get("/projects");
   return response.data;
 }
 
 export const cancelLeaveRequest = async (leaveRequestId: string) => {
-  const response = await employeeAxiosInstance.patch(`/leave/request/cancel/${leaveRequestId}`);
+  const response = await employeeAxios.patch(`/leave/request/cancel/${leaveRequestId}`);
   return response.data;
 }
 
@@ -267,8 +267,7 @@ export const fetchHolidays = async (year: number, countryCode = "IN") => {
     console.log("Fetched holiday data:", data);
 
     if (Array.isArray(data)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return data.map((holiday: any) => ({
+      return data.map((holiday) => ({
         date: holiday.date.iso,
         name: holiday.name,
       }));
@@ -283,36 +282,36 @@ export const fetchHolidays = async (year: number, countryCode = "IN") => {
 };
 
 export const addGroupService = async (data: IGroup) => {
-  const response = await employeeAxiosInstance.post("/groups", { data: data });
+  const response = await employeeAxios.post("/groups", { data: data });
   return response.data;
 }
 
 export const addRegularizeRequest = async (attendanceId: string, reason: string) => {
-  const response = await employeeAxiosInstance.post(`/attendance/${attendanceId}/regularized`, { reason })
+  const response = await employeeAxios.post(`/attendance/${attendanceId}/regularized`, { reason })
   return response.data;
 }
 
 export const getMyQuestionsService = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.get(`/question/${employeeId}`);
+  const response = await employeeAxios.get(`/question/${employeeId}`);
   return response.data;
 }
 
 export const submitQuestionService = async (question: string) => {
-  const response = await employeeAxiosInstance.post("/question", { question });
+  const response = await employeeAxios.post("/question", { question });
   return response.data;
 }
 export const getHrQuestionService = async () => {
-  const response = await employeeAxiosInstance.get("/question");
+  const response = await employeeAxios.get("/question");
   return response.data;
 }
 
 export const answerQuestionService = async (questionId: string, answer: string) => {
-  const response = await employeeAxiosInstance.patch(`/question/${questionId}`, { answer });
+  const response = await employeeAxios.patch(`/question/${questionId}`, { answer });
   return response.data;
 }
 
 export const getGroupByMemberService = async () => {
-  const response = await employeeAxiosInstance.get("/groups");
+  const response = await employeeAxios.get("/groups");
   return response.data;
 }
 
@@ -320,17 +319,17 @@ export const addGroupMembersService = async (
   groupId: string,
   userIds: string[]
 ) => {
-  const response = await employeeAxiosInstance.patch(`/groups/${groupId}/members`, { userIds });
+  const response = await employeeAxios.patch(`/groups/${groupId}/members`, { userIds });
   return response.data;
 };
 
 export const getEmployeePayslipsService = async (employeeId: string) => {
-  const response = await employeeAxiosInstance.get(`/payslip/${employeeId}`);
+  const response = await employeeAxios.get(`/payslip/${employeeId}`);
   return response.data;
 };
 
 export const downloadPayslipService = async (employeeId: string, month: number, year: number) => {
-  const response = await employeeAxiosInstance.get(`/payslip/download/pdf?employeeId=${employeeId}&month=${month}&year=${year}`,
+  const response = await employeeAxios.get(`/payslip/download/pdf?employeeId=${employeeId}&month=${month}&year=${year}`,
     {
       responseType: 'blob',
     }
@@ -343,14 +342,14 @@ export const getUsersForManagers = async (
   page: number,
   pageSize: number,
 ): Promise<{ data: Employee[], total: number, active: number, inactive: number, page: number, pageSize: number }> => {
-  const response = await employeeAxiosInstance.get(`/users?page=${page}&pageSize=${pageSize}`, {
+  const response = await employeeAxios.get(`/users?page=${page}&pageSize=${pageSize}`, {
     params: { ...filter }
   });
   return response.data;
 }
 
 export const deleteUserForManagers = async (id: string) => {
-  const response = await employeeAxiosInstance.delete(`/users/${id}`);
+  const response = await employeeAxios.delete(`/users/${id}`);
   return response.data;
 }
 
@@ -362,17 +361,17 @@ export const addUserForManagers = async (userData: {
   password: string;
   salary: number;
 }) => {
-  const response = await employeeAxiosInstance.post("/users", { userData });
+  const response = await employeeAxios.post("/users", { userData });
   return response.data;
 }
 
 export const getAllLeaveRequestsForManagerService = async (): Promise<{ leaveRequests: ILeaveRequest[] | [] }> => {
-  const response = await employeeAxiosInstance.get("/leave/requests");
+  const response = await employeeAxios.get("/leave/requests");
   return response.data;
 }
 
 export const updateLeaveRequestStatusForManagerService = async (leaveRequestId: string, status: "Approved" | "Rejected", reason?: string) => {
-  const response = await employeeAxiosInstance.patch(`/leave/requests/${leaveRequestId}`, {
+  const response = await employeeAxios.patch(`/leave/requests/${leaveRequestId}`, {
     status,
     reason
   }, {

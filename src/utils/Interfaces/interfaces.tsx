@@ -249,3 +249,11 @@ export interface LeaveRequest {
     endDate: string;
     reason: string;
 }
+
+
+export interface AxiosSetupOptions {
+  baseURL: string;
+  refreshEndpoint: string;
+  sessionKey: string;
+  loginRedirect: string;
+}

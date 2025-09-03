@@ -12,11 +12,11 @@ import { answerAdminQuestionService } from "../../../services/admin/adminService
 
 interface AnswerQuestionModalProps {
     open : boolean,
-    questionId: string; // ID of the question being answered
-    questionText: string; // Question text to display
-    existingAnswer: string; // The existing answer (if any)
-    userRole: "employee" | "admin"; // User role (HR or Admin)
-    onClose: () => void; // Callback to close the modal
+    questionId: string;
+    questionText: string;
+    existingAnswer: string;
+    userRole: "employee" | "admin";
+    onClose: () => void;
 }
 
 const AnswerQuestionModal = ({
