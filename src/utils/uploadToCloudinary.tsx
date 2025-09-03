@@ -1,4 +1,5 @@
-import { employeeAxiosInstance } from "../api/employee.axios";
+import { employeeAxios } from "../api/axios";
+
 
 
 
@@ -6,7 +7,7 @@ export const uploadToCloudinary = async (file: File): Promise<{url : string , ty
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await employeeAxiosInstance.post("/chat/upload", formData, {
+    const res = await employeeAxios.post("/chat/upload", formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
