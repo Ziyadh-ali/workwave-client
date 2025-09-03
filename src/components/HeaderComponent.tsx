@@ -11,9 +11,9 @@ import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { logoutService } from "../services/user/userService";
 import { RootState } from "../store/store";
-import { adminAxiosInstance } from "../api/admin.axios";
 import { adminLogout } from "../store/slices/adminSlice";
 import { NotificationDropdown } from "./NotificationDropDown";
+import { adminAxios } from "../api/axios";
 
 interface Props {
     heading: string;
@@ -35,7 +35,7 @@ export const Header: React.FC<Props> = ({ heading, role }) => {
                 enqueueSnackbar(response.message, { variant: "success" });
                 navigate("/login");
             } else if (role === "admin") {
-                const response = await adminAxiosInstance.post("/logout");
+                const response = await adminAxios.post("/logout");
                 dispatch(adminLogout());
                 enqueueSnackbar(response.data.message, { variant: "success" });
                 navigate("/admin/login");
