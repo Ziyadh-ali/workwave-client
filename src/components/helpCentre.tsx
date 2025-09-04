@@ -17,7 +17,7 @@ import { Header } from "./HeaderComponent";
 import Sidebar from "./SidebarComponent";
 import { IQuestion } from "../utils/Interfaces/interfaces";
 import { SubmitQuestionModal } from "../pages/employee/modals/SubmitQuestionModal";
-import { adminAddFaqService, adminGetFaqService, getQuestionsForAdminService } from "../services/admin/adminService";
+import { adminAddFaqService, adminEditFaqService, adminGetFaqService, getQuestionsForAdminService } from "../services/admin/adminService";
 import AnswerQuestionModal from "../pages/employee/modals/AnswerQuestionModal";
 
 interface FAQCategory {
@@ -124,8 +124,8 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
 
     const handleEditFaq = async (id: string, faqData: FAQCategory) => {
         if (!id) return;
-        await editFaqService(id, faqData);
-        const response = await getFaqService(searchQuery);
+        role === "admin" ? await adminEditFaqService(id, faqData) :await editFaqService(id, faqData);
+        const response = role === "admin" ? await adminGetFaqService(searchQuery) : await getFaqService(searchQuery);
         setFaqs(response.faqs);
         navigate(role === "employee" ? "/help-desk" : "/admin/help");
     };

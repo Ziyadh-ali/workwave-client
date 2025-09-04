@@ -75,6 +75,7 @@ import {
           setAnswerInput("");
           onClose();
         } catch (error) {
+          console.log(error)
           enqueueSnackbar(
             error instanceof AxiosError
               ? error.response?.data?.message

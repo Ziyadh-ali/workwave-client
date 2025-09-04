@@ -245,3 +245,14 @@ export const getPayrollsForReportService = async (month: number, year: number): 
     return response.data;
 }
 
+export const adminEditFaqService = async (faqId: string, updatedData: Partial<{
+  topic: string;
+  description: string;
+  questions: {
+    question: string;
+    answer: string;
+  }[]
+}>) => {
+  const response = await adminAxios.patch(`/faq/${faqId}`, { updatedData });
+  return response.data;
+}
