@@ -197,6 +197,10 @@ export const getFaqService = async (searchQuery?: string) => {
   const response = await employeeAxios.get(`/faq?search=${searchQuery}`);
   return response.data;
 }
+export const getAllFaqService = async () => {
+  const response = await employeeAxios.get(`/faq/all`);
+  return response.data;
+}
 
 export const getEmployeesForChatService = async () => {
   const response = await employeeAxios.get("/employees");

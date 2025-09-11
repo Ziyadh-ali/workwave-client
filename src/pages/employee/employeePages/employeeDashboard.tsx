@@ -1,9 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
-// import { Progress } from "../../../components/ui/progress";
 import { useEffect, useState } from "react";
-import { checkInService, checkOutService, getTodayAttendance } from "../../../services/user/userService";
+import {
+  checkInService,
+  checkOutService,
+  getAllFaqService,
+  getEmployeePayslipsService,
+  getLeaveBalancesService,
+  getMeetingsService,
+  getTodayAttendance,
+} from "../../../services/user/userService";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { enqueueSnackbar } from "notistack";
@@ -11,282 +22,382 @@ import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
+import {
+  IFaq,
+  IMeetingWithDetails,
+  IPayroll,
+  LeaveBalance,
+} from "../../../utils/Interfaces/interfaces";
 
 export interface Attendance {
-    _id?: string,
-    employeeId: string,
-    date: Date,
-    checkInTime: Date | null,
-    checkOutTime: Date | null,
-    status: "Present" | "Absent" | "Late" | "Leave" | "Pending",
+  _id?: string;
+  employeeId: string;
+  date: Date;
+  checkInTime: Date | null;
+  checkOutTime: Date | null;
+  status: "Present" | "Absent" | "Late" | "Leave" | "Pending";
 }
 
 const EmployeeDashboard = () => {
-    const navigate = useNavigate();
-    const [refreshKey, setRefreshKey] = useState(0);
-    const { employee } = useSelector((state: RootState) => state.employee);
-    const [todayAttendance, setTodayAttendance] = useState<Attendance>()
+  const navigate = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { employee } = useSelector((state: RootState) => state.employee);
+  const [todayAttendance, setTodayAttendance] = useState<Attendance>();
+  const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>();
+  const [meetings, setMeetings] = useState<IMeetingWithDetails[]>();
+  const [payrolls, setPayrolls] = useState<IPayroll[]>();
+  const [faqs, setFaqs] = useState<IFaq[]>();
 
-    useEffect(() => {
-        const fetchAttendanceData = async () => {
-            try {
-                const response = await getTodayAttendance(employee ? employee?._id : "")
-                setTodayAttendance(response.todayAttendance);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchAttendanceData();
-    }, [employee, refreshKey]);
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      try {
+        const response = await getTodayAttendance(
+          employee ? employee?._id : ""
+        );
+        setTodayAttendance(response.todayAttendance);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAttendanceData();
+  }, [employee, refreshKey]);
 
-    const handleCheckIn = async () => {
-        try {
-            const response = await checkInService(employee ? employee?._id : "");
-            enqueueSnackbar(response.message, { variant: "success" });
-            setRefreshKey(prev => prev + 1);
-        } catch (error) {
-            console.log(error);
-            enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "Error in checkin", { variant: "error" });
-        }
+  useEffect(() => {
+    const fetchLeaveBalances = async () => {
+      try {
+        const response = await getLeaveBalancesService(
+          employee ? employee?._id : ""
+        );
+        setLeaveBalances(response.leaveBalances.leaveBalances);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchLeaveBalances();
+  }, [employee, refreshKey]);
+
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const response = await getMeetingsService(
+          employee ? employee?._id : ""
+        );
+        setMeetings(response.meetings);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMeetings();
+  }, [employee, refreshKey]);
+
+  useEffect(() => {
+    const fetchPayrolls = async () => {
+      try {
+        const response = await getEmployeePayslipsService(
+          employee ? employee?._id : ""
+        );
+        setPayrolls(response.payslip);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPayrolls();
+  }, [employee, refreshKey]);
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const response = await getAllFaqService();
+        setFaqs(response.faqs);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchFaqs();
+  }, [employee, refreshKey]);
+
+  const handleCheckIn = async () => {
+    try {
+      const response = await checkInService(employee ? employee?._id : "");
+      enqueueSnackbar(response.message, { variant: "success" });
+      setRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Error in checkin",
+        { variant: "error" }
+      );
     }
-    const handleCheckOut = async () => {
-        try {
-            const response = await checkOutService(employee ? employee?._id : "");
-            enqueueSnackbar(response.message, { variant: "success" });
-            setRefreshKey(prev => prev + 1);
-        } catch (error) {
-            console.log(error);
-            enqueueSnackbar((error instanceof AxiosError) ? error.response?.data.message : "Error in checkout", { variant: "error" });
-        }
+  };
+  const handleCheckOut = async () => {
+    try {
+      const response = await checkOutService(employee ? employee?._id : "");
+      enqueueSnackbar(response.message, { variant: "success" });
+      setRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Error in checkout",
+        { variant: "error" }
+      );
     }
+  };
 
-    return (
-        <div className="flex min-h-screen bg-gray-100">
-            {/* Sidebar */}
-            <Sidebar role="employee" />
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <Sidebar role="employee" />
 
-            {/* Main Content */}
-            <div className="flex-1 p-6">
-                {/* Header */}
-                <Header role="employee" heading="Dashboard" />
-                {/* Dashboard Sections */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm text-gray-600">Attendance</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center">
-                            {todayAttendance?.checkInTime && (
-                                <p className="text-sm text-gray-600 mb-2">
-                                    Clocked in at: {new Date(todayAttendance.checkInTime).toLocaleTimeString()}
-                                </p>
-                            )}
-                            {todayAttendance?.checkOutTime && (
-                                <p className="text-sm text-gray-600 mb-2">
-                                    Clocked out at: {new Date(todayAttendance.checkOutTime).toLocaleTimeString()}
-                                </p>
-                            )}
-                            {!todayAttendance?.checkInTime && !todayAttendance?.checkOutTime && (
-                                <>
-                                    <p className="text-sm text-red-500 mb-2">Please check in before 10:00 AM</p>
-                                    <Button onClick={handleCheckIn} className="w-full bg-blue-600 text-white">Clock in</Button>
-                                </>
-                            )}
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+        {/* Header */}
+        <Header role="employee" heading="Dashboard" />
+        {/* Dashboard Sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-sm text-gray-600">
+                Attendance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              {todayAttendance?.checkInTime && (
+                <p className="text-sm text-gray-600 mb-2">
+                  Clocked in at:{" "}
+                  {new Date(todayAttendance.checkInTime).toLocaleTimeString()}
+                </p>
+              )}
+              {todayAttendance?.checkOutTime && (
+                <p className="text-sm text-gray-600 mb-2">
+                  Clocked out at:{" "}
+                  {new Date(todayAttendance.checkOutTime).toLocaleTimeString()}
+                </p>
+              )}
+              {!todayAttendance?.checkInTime &&
+                !todayAttendance?.checkOutTime && (
+                  <>
+                    <p className="text-sm text-red-500 mb-2">
+                      Please check in before 10:00 AM
+                    </p>
+                    <Button
+                      onClick={handleCheckIn}
+                      className="w-full bg-blue-600 text-white"
+                    >
+                      Clock in
+                    </Button>
+                  </>
+                )}
 
-                            {todayAttendance?.checkInTime && !todayAttendance?.checkOutTime && (
-                                <Button onClick={handleCheckOut} className="w-full bg-blue-600 text-white">Clock out</Button>
-                            )}
+              {todayAttendance?.checkInTime &&
+                !todayAttendance?.checkOutTime && (
+                  <Button
+                    onClick={handleCheckOut}
+                    className="w-full bg-blue-600 text-white"
+                  >
+                    Clock out
+                  </Button>
+                )}
 
-                            {todayAttendance?.checkInTime && todayAttendance?.checkOutTime && (
-                                <Button disabled className="w-full bg-gray-400 text-white cursor-not-allowed">You're done for today</Button>
-                            )}
+              {todayAttendance?.checkInTime &&
+                todayAttendance?.checkOutTime && (
+                  <Button
+                    disabled
+                    className="w-full bg-gray-400 text-white cursor-not-allowed"
+                  >
+                    You're done for today
+                  </Button>
+                )}
+            </CardContent>
+          </Card>
 
-                        </CardContent>
-                    </Card>
-
-                    {/* Leave Balance */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm text-gray-600">Leave Balance</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex justify-between mb-2">
-                                <p className="text-sm text-gray-600">Normal Leave</p>
-                                <p className="text-sm text-gray-800">5 days</p>
-                            </div>
-                            <div className="flex justify-between mb-4">
-                                <p className="text-sm text-gray-600">Parental Leave</p>
-                                <p className="text-sm text-gray-800">10 days</p>
-                            </div>
-                            <Button onClick={()=>{navigate("/leave")}} variant="outline" className="w-full">
-                                Apply for Leave
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Tasks */}
-                    {/* <Card>
-                        <CardHeader className="flex justify-between items-center">
-                            <CardTitle className="text-sm text-gray-600">Tasks</CardTitle>
-                            <a href="#" className="text-sm text-blue-600 hover:underline">
-                                View All
-                            </a>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                    <input type="checkbox" className="h-4 w-4" />
-                                    <p className="text-sm text-gray-600">
-                                        Code Review - E-commerce App
-                                    </p>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <input type="checkbox" className="h-4 w-4" />
-                                    <p className="text-sm text-gray-600">Update Documentation</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card> */}
-
-                    {/* Current Project */} 
-                    {/* <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm text-gray-600">Current Project</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm font-medium text-gray-800 mb-2">
-                                E-commerce App
-                            </p>
-                            <div className="flex items-center space-x-2 mb-2">
-                                <span className="text-xs text-gray-600">8 members</span>
-                                <span className="text-xs text-gray-600">75% complete</span>
-                            </div>
-                            <Progress value={75} className="w-full" />
-                        </CardContent>
-                    </Card> */}
-
-                    {/* Today's Meetings */}
-                    <Card>
-                        <CardHeader className="flex justify-between items-center">
-                            <CardTitle className="text-sm text-gray-600">Meetings</CardTitle>
-                            <Button onClick={()=>{navigate("/meeting")}} variant="outline" size="sm">
-                                See meeting
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm font-medium text-gray-800">
-                                No meetings
-                            </p>
-                            {/* <p className="text-sm text-gray-600">10:00 AM - 10:30 AM</p> */}
-                        </CardContent>
-                    </Card>
-
-                    {/* Payroll */}
-                    <Card>
-                        <CardHeader className="flex justify-between items-center">
-                            <CardTitle className="text-sm text-gray-600">Payroll</CardTitle>
-                            <a onClick={()=>{navigate("/payroll")}} className="text-sm text-blue-600 hover:underline">
-                                View Details
-                            </a>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm text-gray-600">Latest Salary</p>
-                            <p className="text-lg font-semibold text-gray-800 mb-2">₹75000</p>
-                            <p className="text-sm text-gray-600">Next Payment</p>
-                            <p className="text-sm text-gray-800">March 1, 2025</p>
-                        </CardContent>
-                    </Card>
-
-                    {/* Messages */}
-                    <Card>
-                        <CardHeader className="flex justify-between items-center">
-                            <CardTitle className="text-sm text-gray-600">Messages</CardTitle>
-                            <span className="text-xs text-blue-600">3 new</span>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center space-x-3 mb-4">
-                                <Avatar className="w-10 h-10">
-                                    <AvatarImage
-                                        src="https://via.placeholder.com/40"
-                                        alt="HR Team"
-                                    />
-                                    <AvatarFallback>HR</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-sm font-medium text-gray-800">HR Team</p>
-                                    <p className="text-xs text-gray-600">2 new messages</p>
-                                </div>
-                            </div>
-                            <Button onClick={()=>{navigate("/messages")}} variant="outline" className="w-full">
-                                Open Chat
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Help Desk */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm text-gray-600">Help Desk</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm font-medium text-gray-800 mb-2">
-                                Recent Ticket
-                            </p>
-                            <p className="text-sm text-gray-600 mb-2">
-                                Ticket #123: Password Reset
-                            </p>
-                            <p className="text-sm text-orange-600 mb-4">In Progress</p>
-                            <Button onClick={()=>{navigate("/help-desk")}} variant="outline" className="w-full">
-                                Get Help
-                            </Button>
-                        </CardContent>
-                    </Card>
+          {/* Leave Balance */}
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-sm text-gray-600">
+                Leave Balance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {leaveBalances && leaveBalances.length > 0 ? (
+                <div className="mb-3">
+                  {leaveBalances.slice(0, 2).map((leave) => (
+                    <p
+                      key={leave.leaveTypeId._id}
+                      className="text-sm text-gray-700 flex justify-between mb-1"
+                    >
+                      <span>{leave.leaveTypeId.name}</span>
+                      <span className="font-semibold">
+                        Balance :{leave.availableDays}
+                      </span>
+                    </p>
+                  ))}
+                  {leaveBalances.length > 2 && (
+                    <p className="text-xs text-gray-500 italic">+ more</p>
+                  )}
                 </div>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3">
+                  No leave balances available
+                </p>
+              )}
+              <Button
+                onClick={() => {
+                  navigate("/leave");
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Apply for Leave
+              </Button>
+            </CardContent>
+          </Card>
 
-                {/* Profile Section
-                <Card className="mt-6">
-                    <CardContent className="flex items-center justify-between p-4">
-                        <div className="flex items-center space-x-4">
-                            <Avatar className="w-12 h-12">
-                                <AvatarImage
-                                    src={user.profilePic || "https://via.placeholder.com/40"}
-                                    alt={user.fullName}
-                                />
-                                <AvatarFallback>
-                                    {user.fullName
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")
-                                        .toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="text-sm font-medium text-gray-800">
-                                    {user.fullName}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    {user.role === "developer"
-                                        ? "Senior Developer"
-                                        : user.role === "hr"
-                                            ? "HR Manager"
-                                            : "Project Manager"}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <p className="text-sm text-gray-600">
-                                Visa expires: June 30, 2025
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                Next Review: April 15, 2025
-                            </p>
-                        </div>
-                        <Button variant="outline">Edit Profile</Button>
-                    </CardContent>
-                </Card> */}
-            </div>
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-sm text-gray-600">Meetings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {meetings && meetings.length > 0 ? (
+                <div className="mb-3">
+                  {meetings.slice(0, 1).map((m) => (
+                    <div
+                      key={m._id}
+                      className="text-sm text-gray-700 mb-2 border-b pb-1"
+                    >
+                      <p className="font-semibold">{m.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(m.date).toLocaleDateString()} • {m.startTime}
+                      </p>
+                      <p className="text-xs">
+                        Status: <span className="font-medium">{m.status}</span>
+                      </p>
+                    </div>
+                  ))}
+                  {meetings.length > 2 && (
+                    <p className="text-xs text-gray-500 italic">+ more</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3">
+                  No meetings scheduled
+                </p>
+              )}
+              <Button
+                onClick={() => {
+                  navigate("/meeting");
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                See Meetings
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Payroll */}
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-sm text-gray-600">Payroll</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {payrolls && payrolls.length > 0 ? (
+                <div className="mb-3">
+                  {payrolls.slice(0, 1).map((p) => {
+                    const monthName = new Date(
+                      p.year,
+                      p.month - 1
+                    ).toLocaleString("default", { month: "long" });
+                    return (
+                      <div
+                        key={p._id}
+                        className="text-sm text-gray-700 mb-2 border-b pb-1"
+                      >
+                        <p className="font-semibold">
+                          {monthName} {p.year}
+                        </p>
+                        <p className="text-xs">
+                          Net Salary:{" "}
+                          <span className="font-medium">
+                            ₹{p.netSalary.toLocaleString()}
+                          </span>
+                        </p>
+                        <p className="text-xs">
+                          Status:{" "}
+                          <span className="font-medium">{p.status}</span>
+                        </p>
+                      </div>
+                    );
+                  })}
+                  {payrolls.length > 2 && (
+                    <p className="text-xs text-gray-500 italic">+ more</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3">No payroll records</p>
+              )}
+              <Button
+                onClick={() => {
+                  navigate("/payroll");
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Help Desk */}
+          <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-sm text-gray-600">FAQs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {faqs && faqs.length > 0 ? (
+                <div className="mb-3">
+                  {faqs.slice(0, 1).map((faq) => (
+                    <div
+                      key={faq._id}
+                      className="text-sm text-gray-700 mb-2 border-b pb-1"
+                    >
+                      <p className="font-semibold">{faq.topic}</p>
+                      {faq.questions && faq.questions.length > 0 ? (
+                        <p className="text-xs text-gray-500 truncate">
+                          Q: {faq.questions[0].question}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-500 italic">
+                          No questions yet
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {faqs.length > 1 && (
+                    <p className="text-xs text-gray-500 italic">+ more</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3">No FAQs available</p>
+              )}
+              <Button
+                onClick={() => {
+                  navigate("/help-desk");
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                See More
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default EmployeeDashboard;

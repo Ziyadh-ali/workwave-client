@@ -35,6 +35,7 @@ const LeaveManagementPage = () => {
 
                 return { ...request, days: days };
             });
+            console.log(updatedLeaveRequests)
             setLeaveRequests(updatedLeaveRequests || []);
             setTotalPages(data.totalPages)
         } catch (error) {

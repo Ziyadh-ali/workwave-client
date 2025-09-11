@@ -52,7 +52,6 @@ const LeavePage = () => {
         searchTerm,
         statusFilter === "All" ? "" : statusFilter
       );
-      console.log(response)
       setLeaveHistory(response.leaveRequests);
       setTotalPages(response.totalPages);
     }
