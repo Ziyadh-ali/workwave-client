@@ -126,7 +126,7 @@ const LeaveManagementPage = () => {
             accessor: (row: ILeaveRequest) =>
                 row.status === "Rejected" ? (
                     <span className="text-sm text-red-600">
-                        {row.reason || "No reason provided"}
+                        {row.rejectionReason || "No reason provided"}
                     </span>
                 ) : (
                     "-"

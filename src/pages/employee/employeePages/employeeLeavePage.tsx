@@ -25,13 +25,13 @@ import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../../../context/SocketContext";
-import { ILeaveRequest, LeaveRequest, LeaveTypes } from "../../../utils/Interfaces/interfaces";
+import { ILeaveRequest, LeaveBalance, LeaveRequest } from "../../../utils/Interfaces/interfaces";
 
 
 const LeavePage = () => {
   const naviagte = useNavigate();
   const location = useLocation();
-  const [leaveTypes, setLeaveTypes] = useState<LeaveTypes>();
+  const [leaveTypes, setLeaveTypes] = useState<LeaveBalance[]>([]);
   const { confirm, ConfirmModalComponent } = useConfirmModal();
   const [leaveHistory, setLeaveHistory] = useState<ILeaveRequest[]>([]);
   const [openModal, setOpenModal] = useState(false);
@@ -61,7 +61,7 @@ const LeavePage = () => {
     const fethchLeaveBalance = async () => {
       if (employee?._id) {
         const response = await getLeaveBalancesService(employee._id);
-        setLeaveTypes(response.leaveBalances);
+        setLeaveTypes(response.leaveBalances.leaveBalances);
       }
     };
     fethchLeaveBalance();
@@ -171,7 +171,7 @@ const LeavePage = () => {
     },
     {
       header: "Actions",
-      accessor: (row: ILeaveRequest) => {
+      accessor: (row: ILeaveRequest) => {   
         if (row.status === "Pending") {
           return (
             <Button
@@ -197,7 +197,7 @@ const LeavePage = () => {
         } else if (row.status === "Rejected") {
           return (
             <span className="text-sm text-red-600">
-              Reason: {row.reason || "No reason provided"}
+              Reason: {row.rejectionReason || "No reason provided"}
             </span>
           );
         } else {
@@ -222,11 +222,11 @@ const LeavePage = () => {
             Types of leaves Available:
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
-            {leaveTypes?.leaveBalances?.map((leave) => (
-              <Card key={leave.leaveTypeName} className="text-center">
+            {leaveTypes?.map((leave) => (
+              <Card key={leave.leaveTypeId._id} className="text-center">
                 <CardHeader>
                   <CardTitle className="text-sm text-gray-600">
-                    {leave.leaveTypeName}
+                    {leave.leaveTypeId.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

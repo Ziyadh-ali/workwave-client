@@ -211,6 +211,7 @@ export interface ILeaveRequest {
   assignedManager: string;
   duration: number;
   reason?: string;
+  rejectionReason?:string;
   status?: "Pending" | "Approved" | "Rejected";
 }
 
