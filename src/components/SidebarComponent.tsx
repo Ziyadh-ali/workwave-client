@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Home,
@@ -6,151 +5,41 @@ import {
   Calendar,
   DollarSign,
   HelpCircle,
-  // Users,
-  // ChevronRight,
-  // Folder,
+  ClipboardList,
 } from "lucide-react";
-// import { useSelector } from "react-redux";
-// import { RootState } from "../store/store";
-// import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
-const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
-  // const { employee } = useSelector((state: RootState) => state.employee || { employee: null });
-  // State to manage the visibility of the Employees submenu
-  // const [isEmployeesOpen, setIsEmployeesOpen] = useState(false);
+const Sidebar = ({ role }: { role: "admin" | "employee"}) => {
 
-  // const toggleEmployeesMenu = () => {
-  //   setIsEmployeesOpen(!isEmployeesOpen);
-  // };
-
+  const {employee} = useSelector((state : RootState) => state.employee)
   return (
-    <div className="w-64 bg-white shadow-md">
+    <div className="w-64 bg-white shadow-md min-h-screen">
       <div className="p-4">
+        {/* Logo Section */}
         <div className="flex items-center space-x-2 mb-6">
           <img
             src="https://res.cloudinary.com/dr0iflvfs/image/upload/v1741307136/logo-transparent_gra32p.png"
             alt="HR Portal Logo"
-            className="h-15"
+            className="h-12"
           />
           <h2 className="text-lg font-semibold text-gray-800">Work Wave</h2>
         </div>
-        {role == "employee" ?
+
+        {/* Employee Sidebar */}
+        {role === "employee" && employee?.role !== "hr" &&(
           <nav className="space-y-2">
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <Home className="w-5 h-5" />
-              <span>Dashboard</span>
-            </NavLink>
-            <NavLink
-              to="/attendance"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <Clock className="w-5 h-5" />
-              <span>Attendance</span>
-            </NavLink>
-            <NavLink
-              to="/leave"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <Calendar className="w-5 h-5" />
-              <span>Leave</span>
-            </NavLink>
-            <NavLink
-              to="/payslip"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <DollarSign className="w-5 h-5" />
-              <span>payslip</span>
-            </NavLink>
-            <NavLink
-              to="/help-desk"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <HelpCircle className="w-5 h-5" />
-              <span>Help Desk</span>
-            </NavLink>
-            {/* <NavLink
-              to="/project"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <Folder className="w-5 h-5" />
-              <span>Project </span>
-            </NavLink> */}
-            <NavLink
-              to="/meeting"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 p-2 rounded-md ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`
-              }
-            >
-              <Calendar className="w-5 h-5" />
-              <span>Meeting</span>
-            </NavLink>
-                {/* {isEmployeesOpen && (
-                  <div className="ml-6 mt-2 space-y-1">
-                    <NavLink
-                      to="/developers/developers-list"
-                      className={({ isActive }) =>
-                        `flex items-center space-x-2 p-2 rounded-md text-sm ${isActive
-                          ? "bg-blue-100 text-blue-600"
-                          : "text-gray-600 hover:bg-gray-100"
-                        }`
-                      }
-                    >
-                      <span className="text-gray-600">•</span>
-                      <span>Developer List</span>
-                    </NavLink>
-                    <NavLink
-                      to="/developers/leave"
-                      className={({ isActive }) =>
-                        `flex items-center space-x-2 p-2 rounded-md text-sm ${isActive
-                          ? "bg-blue-100 text-blue-600"
-                          : "text-gray-600 hover:bg-gray-100"
-                        }`
-                      }
-                    >
-                      <span className="text-gray-600">•</span>
-                      <span>Leave Requests</span>
-                    </NavLink> */}
-                    {/* <NavLink
-                      to="/developers/salary"
-                      className={({ isActive }) =>
-                        `flex items-center space-x-2 p-2 rounded-md text-sm ${isActive
-                          ? "bg-blue-100 text-blue-600"
-                          : "text-gray-600 hover:bg-gray-100"
-                        }`
-                      }
-                    >
-                      <span className="text-gray-600">•</span>
-                      <span>Salary</span>
-                    </NavLink> */}
-                  {/* </div> */}
-                {/* )} */}
-              {/* </div> */}
-            {/* )} */}
+            <SidebarLink to="/dashboard" icon={<Home />} label="Dashboard" />
+            <SidebarLink to="/attendance" icon={<Clock />} label="Attendance" />
+            <SidebarLink to="/leave" icon={<Calendar />} label="Leave" />
+            <SidebarLink to="/payslip" icon={<DollarSign />} label="Payslip" />
+            <SidebarLink to="/help-desk" icon={<HelpCircle />} label="Help Desk" />
+            <SidebarLink to="/meeting" icon={<Calendar />} label="Meeting" />
+          </nav>
+        )}
 
-          </nav> :
-
+        {/* Admin Sidebar */}
+        {role === "admin" && (
           <nav className="space-y-2">
             {[
               { path: "/admin/dashboard", label: "Dashboard", icon: "📊" },
@@ -159,29 +48,60 @@ const Sidebar = ({ role }: { role: "admin" | "employee" }) => {
               { path: "/admin/leave/types", label: "Leave Type Management", icon: "📅" },
               { path: "/admin/payroll", label: "Payroll", icon: "💰" },
               { path: "/admin/attendance", label: "Attendance", icon: "⏰" },
-              { path: "/admin/attendance/summary", label: "Monthly Summary", icon: "⏰" },
-              { path: "/admin/reports", label: "Reports", icon: "📊" },
+              { path: "/admin/attendance/summary", label: "Monthly Summary", icon: "📊" },
+              { path: "/admin/reports", label: "Reports", icon: "📈" },
               { path: "/admin/help", label: "Help Centre", icon: "❓" },
             ].map(({ path, label, icon }) => (
-              <NavLink
-                key={path}
-                to={path}
-                end
-                className={({ isActive }) =>
-                  `flex items-center space-x-2 p-2 rounded-md transition ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                  }`
-                }
-              >
-                <span>{icon}</span>
-                <span>{label}</span>
-              </NavLink>
+              <SidebarLink key={path} to={path} icon={<span>{icon}</span>} label={label} />
             ))}
           </nav>
-        }
+        )}
 
+        {/* HR Sidebar */}
+        {employee?.role === "hr" && (
+          <nav className="space-y-2">
+            <SidebarLink to="/dashboard" icon={<Home />} label="Dashboard" />
+            <SidebarLink to="/attendance" icon={<Clock />} label="Attendance" />
+            <SidebarLink to="/leave" icon={<Calendar />} label="Leave" />
+            <SidebarLink to="/meeting" icon={<Calendar />} label="Meeting" />
+            <SidebarLink
+              to="/developers/leave"
+              icon={<ClipboardList />}
+              label="Leave Requests"
+            />
+            <SidebarLink to="/payslip" icon={<DollarSign />} label="Payroll" />
+            <SidebarLink to="/help-desk" icon={<HelpCircle />} label="Help Desk" />
+          </nav>
+        )}
       </div>
     </div>
   );
 };
 
 export default Sidebar;
+
+/* --------------------------------------------- */
+/* Reusable NavLink Component */
+const SidebarLink = ({
+  to,
+  icon,
+  label,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+}) => (
+  <NavLink
+    to={to}
+    className={({ isActive }) =>
+      `flex items-center space-x-2 p-2 rounded-md transition font-medium ${
+        isActive
+          ? "bg-blue-100 text-blue-600"
+          : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+      }`
+    }
+  >
+    <span className="w-5 h-5">{icon}</span>
+    <span>{label}</span>
+  </NavLink>
+);

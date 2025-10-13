@@ -369,8 +369,8 @@ export const addUserForManagers = async (userData: {
   return response.data;
 }
 
-export const getAllLeaveRequestsForManagerService = async (): Promise<{ leaveRequests: ILeaveRequest[] | [] }> => {
-  const response = await employeeAxios.get("/leave/requests");
+export const getAllLeaveRequestsForManagerService = async (page:number , limit : number): Promise<{ leaveRequests: ILeaveRequest[] | []  , totalPages : number}> => {
+  const response = await employeeAxios.get(`/leave/requests?page=${page}&limit=${limit}`);
   return response.data;
 }
 

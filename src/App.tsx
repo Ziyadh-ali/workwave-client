@@ -73,6 +73,8 @@ function App() {
 
               <Route path="developers/leave" element={<ManagerLeaveManagementPage />} />
 
+              
+
               <Route path="payslip" element={<PayslipPage />} />
 
             </Route>
