@@ -20,6 +20,7 @@ function AdminDashBoard() {
     const fetchLeaveRequests = async () => {
       const response = await getEveryLeaveRequestsService();
       const pendingCount = response.leaveRequests.filter(req => req.status === "Pending").length;
+      console.log("gelll",response)
       setPendingRequests(pendingCount)
       const latestRequests = response.leaveRequests.slice(0, 2);
       setLeaveRequests(latestRequests);
