@@ -8,7 +8,7 @@ export const store = configureStore({
         admin : adminSlice,
         employee : employeeSlice
     }
-})
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
