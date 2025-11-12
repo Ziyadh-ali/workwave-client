@@ -341,7 +341,7 @@ const EmployeeDashboard = () => {
               )}
               <Button
                 onClick={() => {
-                  navigate("/payroll");
+                  navigate("/payslip");
                 }}
                 variant="outline"
                 className="w-full"
