@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
@@ -91,6 +92,7 @@ const AdminEditUserPage = () => {
                     const typedKey = key as keyof typeof values;
                     return value !== originalValueRef.current[typedKey];
                 });
+
                 if (changedEntries.length === 0) {
                     enqueueSnackbar("No changes made", { variant: "info" });
                     setSubmitting(false);
@@ -98,13 +100,15 @@ const AdminEditUserPage = () => {
                     return;
                 }
 
-                const formData = new FormData();
+                const formData = {} as Partial<Employee>;
+                
                 changedEntries.forEach(([key, value]) => {
                     if (value !== null && value !== undefined && value !== "") {
                         if (key === "joinedAt" && typeof value === "string") {
-                            formData.append(key, new Date(value).toISOString());
+                            formData[key] = new Date(value);
                         } else {
-                            formData.append(key, value);
+                            (formData as any)[key] = value;
+
                         }
                     }
                 });
@@ -252,20 +256,6 @@ const AdminEditUserPage = () => {
                                     <div className="text-red-500 text-sm">{formik.errors.joinedAt}</div>
                                 )}
                             </div>
-                            {/* <div>
-                                <label className="text-sm font-medium text-gray-700">Profile Picture</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(event) =>
-                                        formik.setFieldValue("profilePic", event.currentTarget.files?.[0])
-                                    }
-                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                />
-                                {formik.touched.profilePic && formik.errors.profilePic && (
-                                    <div className="text-red-500 text-sm">{formik.errors.profilePic}</div>
-                                )}
-                            </div> */}
                             <div className="flex justify-end space-x-4">
                                 <Button
                                     type="button"

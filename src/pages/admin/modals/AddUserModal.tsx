@@ -21,6 +21,7 @@ interface AddUserModalProps {
 }
 
 const AddUserModal = ({ onAddUser }: AddUserModalProps) => {
+  const [isOpen, setIsOpen] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
   const formik = useFormik({
@@ -38,12 +39,14 @@ const AddUserModal = ({ onAddUser }: AddUserModalProps) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...userData } = values
       onAddUser(userData);
+      formik.resetForm();
+      setIsOpen(false);
     },
   })
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild >
         <Button className="bg-blue-600 text-white">+ Add Employee</Button>
       </DialogTrigger>
       <DialogContent

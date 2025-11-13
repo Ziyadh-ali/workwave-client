@@ -44,7 +44,7 @@ export const getManagers = async () => {
     return response.data;
 }
 
-export const updateUserService = async (userId: string, formData: FormData) => {
+export const updateUserService = async (userId: string, formData: Partial<Employee>) => {
     const response = await adminAxios.patch(`/users/${userId}`, formData);
     return response.data;
 

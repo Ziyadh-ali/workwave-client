@@ -4,11 +4,7 @@ import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { useState } from "react";
 import { PlusCircle } from "lucide-react";
-
-interface GeneratePayrollModalProps {
-  onGenerate: (employeeId?: string) => void;
-  isGenerating: boolean;
-}
+import { GeneratePayrollModalProps } from "../../../utils/Interfaces/interfaces";
 
 const GeneratePayrollModal = ({onGenerate, isGenerating }: GeneratePayrollModalProps) => {
 //   const [employeeId, setEmployeeId] = useState("");

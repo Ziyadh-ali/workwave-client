@@ -12,14 +12,7 @@ import ShadTable from "../../../components/TableComponent";
 import { useConfirmModal } from "../../../components/useConfirm";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
-import { Employee } from "../../../utils/Interfaces/interfaces";
-
-interface EmployeeFilter {
-  role?: string;
-  status?: string;
-  department?: string;
-  [key: string]: string | undefined;
-}
+import { Employee, EmployeeFilter } from "../../../utils/Interfaces/interfaces";
 
 
 function UserManagement() {
@@ -81,9 +74,6 @@ function UserManagement() {
       const data = await addUser(userData);
       enqueueSnackbar(data.message, { variant: "success" });
       fetchUsers()
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     } catch (error) {
       if (error instanceof AxiosError) {
         enqueueSnackbar(error.response?.data?.message || "An unexpected error occurred", { variant: "error" });

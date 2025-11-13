@@ -177,11 +177,11 @@ export interface INotification {
   recipient: string;
   sender?: string;
   type:
-    | "message"
-    | "leave_approval"
-    | "leave_rejection"
-    | "meeting_scheduled"
-    | "meeting_updated";
+  | "message"
+  | "leave_approval"
+  | "leave_rejection"
+  | "meeting_scheduled"
+  | "meeting_updated";
   content: string;
   read?: boolean;
   createdAt: Date;
@@ -211,7 +211,7 @@ export interface ILeaveRequest {
   assignedManager: string;
   duration: number;
   reason?: string;
-  rejectionReason?:string;
+  rejectionReason?: string;
   status?: "Pending" | "Approved" | "Rejected";
 }
 
@@ -255,6 +255,19 @@ export interface EmployeeFilter {
   department?: string;
   [key: string]: string | undefined;
 }
+
+export interface GeneratePayrollModalProps {
+  onGenerate: (employeeId?: string) => void;
+  isGenerating: boolean;
+}
+
+export interface GenerateSummaryModalProps {
+  month: number;
+  year: number;
+  onGenerate: (month: number, year: number, employeeId?: string) => void;
+  isGenerating: boolean;
+}
+
 
 export interface LeaveTypes {
   userId: string;
@@ -301,4 +314,14 @@ export interface LeaveBalance {
   availableDays: number;
   usedDays: number;
   totalDays: number;
+}
+
+
+
+export interface AttendanceDay {
+  _id: string;
+  date: string;
+  status: "Present" | "Absent" | "Late" | "Leave" | "Pending";
+  isRegularized?: boolean;
+  isRegularizable?: boolean;
 }

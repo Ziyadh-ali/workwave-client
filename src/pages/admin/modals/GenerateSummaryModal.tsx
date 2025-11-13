@@ -1,17 +1,9 @@
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../../components/ui/dialog";
-// import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-// import { useSnackbar } from "notistack";
 import { FileText } from "lucide-react";
-
-interface GenerateSummaryModalProps {
-  month: number;
-  year: number;
-  onGenerate: (month: number, year: number, employeeId?: string) => void;
-  isGenerating: boolean;
-}
+import { GenerateSummaryModalProps } from "../../../utils/Interfaces/interfaces";
 
 const GenerateSummaryModal = ({ 
   month, 
@@ -20,9 +12,7 @@ const GenerateSummaryModal = ({
   isGenerating 
 }: GenerateSummaryModalProps) => {
   const [isOpen, setIsOpen] = useState(false);
-//   const [employeeId, setEmployeeId] = useState("");
   const [isBulk, setIsBulk] = useState(true);
-//   const { enqueueSnackbar } = useSnackbar();
 
   const handleGenerate = () => {
 
