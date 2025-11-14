@@ -42,7 +42,8 @@ const RejectLeaveRequestModal = ({ leaveRequestId, role }: RejectProps) => {
                         navigate(role === "admin" ? "/admin/leave/requests" : "/developers/leave");
                         setOpen(false);
                     } catch (error) {
-                        enqueueSnackbar(error instanceof AxiosError ? error.response?.data?.message : "Error in forgot password", { variant: "error" });
+                        console.log("helloooo")
+                        enqueueSnackbar(error instanceof AxiosError ? error.response?.data?.message : "Error in leave rejection", { variant: "error" });
                     }
                 }
             })

@@ -316,12 +316,28 @@ export interface LeaveBalance {
   totalDays: number;
 }
 
-
-
 export interface AttendanceDay {
   _id: string;
   date: string;
   status: "Present" | "Absent" | "Late" | "Leave" | "Pending";
   isRegularized?: boolean;
   isRegularizable?: boolean;
+}
+
+
+export interface AddUserModalProps {
+  onAddUser: (userData: {
+    fullName: string
+    email: string
+    role: string
+    department: string
+    password: string
+    salary: number
+  }) => void
+}
+
+export interface AddLeaveRequestModalProps {
+    open: boolean;
+    onClose: () => void;
+    onAdd: (leaveRequest: LeaveRequest) => Promise<void>;
 }

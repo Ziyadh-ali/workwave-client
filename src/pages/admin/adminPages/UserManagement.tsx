@@ -19,7 +19,7 @@ function UserManagement() {
   const location = useLocation()
   const navigate = useNavigate();
   const [users, setUsers] = useState<Employee[]>([]);
-  const {confirm , ConfirmModalComponent} = useConfirmModal()
+  const { confirm, ConfirmModalComponent } = useConfirmModal()
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(2);
   const [total, setTotal] = useState<number>(0);
@@ -31,6 +31,8 @@ function UserManagement() {
     department: "all",
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -59,6 +61,14 @@ function UserManagement() {
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, filter, location]);
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      handleFilterChange("search", searchTerm);
+    }, 500);
+
+    return () => clearTimeout(delay);
+  }, [searchTerm]);
 
   //TODO  Function for handling adding user- ------------------------------------------------------------------------------------
 
@@ -89,9 +99,9 @@ function UserManagement() {
 
   const handleDelete = (userId: string) => {
     confirm({
-      title : "Delete Employee?",
-      message : "Are you sure you want to delete this Employee?",
-      onConfirm : async () => {
+      title: "Delete Employee?",
+      message: "Are you sure you want to delete this Employee?",
+      onConfirm: async () => {
         try {
           const response = await deleteUser(userId);
           enqueueSnackbar(response.message, { variant: "success" });
@@ -151,7 +161,7 @@ function UserManagement() {
       accessor: (row: Employee) =>
         <div className="flex space-x-2">
           <button onClick={() => navigate(`/admin/users/${row._id}`)} className="text-blue-600 hover:underline cursor-pointer">👁️</button>
-          <button onClick={() => handleDelete(row._id)} className="text-red-600 hover:underline cursor-pointer">🗑️</button>  
+          <button onClick={() => handleDelete(row._id)} className="text-red-600 hover:underline cursor-pointer">🗑️</button>
         </div>,
     },
   ];
@@ -199,7 +209,8 @@ function UserManagement() {
                 type="text"
                 placeholder="Search users..."
                 className="w-full md:w-1/3"
-                onChange={(e) => handleFilterChange("search", e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <div className="flex space-x-4">
                 <Select onValueChange={(value) => handleFilterChange("role", value)}>
@@ -236,7 +247,7 @@ function UserManagement() {
               <AddUserModal onAddUser={handleAddUser} />
             </div>
             <div className="overflow-x-auto">
-            <ShadTable
+              <ShadTable
                 columns={employeeColumns}
                 data={users}
                 keyExtractor={(row) => row._id}

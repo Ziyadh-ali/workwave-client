@@ -46,7 +46,7 @@ const AttendancePage = () => {
           isRegularized: attendance.isRegularized,
           isRegularizable: attendance.isRegularizable || false,
         }));
-
+        console.log( "attendnaces" ,attendanceResponse.attendancesOfMonth)
         setAttendanceData(
           Array.isArray(attendanceResponse.attendancesOfMonth)
             ? attendanceResponse.attendancesOfMonth

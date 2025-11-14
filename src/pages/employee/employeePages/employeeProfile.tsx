@@ -11,7 +11,7 @@ import ChangePasswordModal from "../modals/ChangePasswordModal";
 import { enqueueSnackbar } from "notistack";
 import Sidebar from "../../../components/SidebarComponent";
 import { Header } from "../../../components/HeaderComponent";
-import { Employee } from "../../../utils/Interfaces/interfaces";
+import { Employee } from "../../../utils/Interfaces/interfaces";    
 
 const EmployeeProfilePage = () => {
     const naviagte = useNavigate();
@@ -35,6 +35,11 @@ const EmployeeProfilePage = () => {
         newPassword: string,
     }) => {
         try {
+            if(updatedPass.currentPassword === updatedPass.newPassword) {
+                enqueueSnackbar("Current and New password are same" , {variant : "info"});
+                return;
+            }
+
             if (employee?._id) {
                 const response = await changePasswordService(employee?._id, updatedPass.currentPassword, updatedPass.newPassword);
                 enqueueSnackbar(response.message, { variant: "success" });

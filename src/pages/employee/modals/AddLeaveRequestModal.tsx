@@ -9,18 +9,7 @@ import {  getEveryLeaveTypesService } from "../../../services/user/userService";
 import { enqueueSnackbar } from "notistack";
 import { AxiosError } from "axios";
 import { leaveRequestSchema } from "../../../utils/leaveRequest.validation";
-import { LeaveRequest, LeaveType } from "../../../utils/Interfaces/interfaces";
-
-
-// Interface for the leave request data
-
-// Props for the AddLeaveRequestModal
-interface AddLeaveRequestModalProps {
-    open: boolean;
-    onClose: () => void;
-    onAdd: (leaveRequest: LeaveRequest) => Promise<void>;
-}
-
+import { AddLeaveRequestModalProps, LeaveType } from "../../../utils/Interfaces/interfaces";
 
 const AddLeaveRequestModal = ({ open, onClose, onAdd }: AddLeaveRequestModalProps) => {
     const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>();
@@ -53,9 +42,6 @@ const AddLeaveRequestModal = ({ open, onClose, onAdd }: AddLeaveRequestModalProp
             try {
                 await onAdd(values);
                 enqueueSnackbar("Leave Request added successfully", { variant: "success" });
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
                 resetForm();
                 onClose();
             } catch (error) {
@@ -67,6 +53,7 @@ const AddLeaveRequestModal = ({ open, onClose, onAdd }: AddLeaveRequestModalProp
                             enqueueSnackbar(`${err.field}: ${err.message}`, { variant: "error" });
                         });
                     } else {
+                        console.log("Error data:", errorData);
                         enqueueSnackbar(errorData?.message || "An unexpected error occurred", { variant: "error" });
                     }
                 }

@@ -160,57 +160,75 @@ const EmployeeDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex justify-between items-center">
-              <CardTitle className="text-sm text-gray-600">
-                Attendance
-              </CardTitle>
+              <CardTitle className="text-sm text-gray-600">Attendance</CardTitle>
             </CardHeader>
+
             <CardContent className="text-center">
-              {todayAttendance?.checkInTime && (
-                <p className="text-sm text-gray-600 mb-2">
-                  Clocked in at:{" "}
-                  {new Date(todayAttendance.checkInTime).toLocaleTimeString()}
-                </p>
-              )}
-              {todayAttendance?.checkOutTime && (
-                <p className="text-sm text-gray-600 mb-2">
-                  Clocked out at:{" "}
-                  {new Date(todayAttendance.checkOutTime).toLocaleTimeString()}
-                </p>
-              )}
-              {!todayAttendance?.checkInTime &&
-                !todayAttendance?.checkOutTime && (
+              {(() => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const safeFormatTime = (value: any) => {
+                  if (!value) return "";
+
+                  if (/^\d{2}:\d{2}$/.test(value)) {
+                    return value;
+                  }
+
+                  return value.substring(11, 16);
+                };
+
+                return (
                   <>
-                    <p className="text-sm text-red-500 mb-2">
-                      Please check in before 10:00 AM
-                    </p>
-                    <Button
-                      onClick={handleCheckIn}
-                      className="w-full bg-blue-600 text-white"
-                    >
-                      Clock in
-                    </Button>
+                    {todayAttendance?.checkInTime && safeFormatTime(todayAttendance.checkInTime) && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        Clocked in at: {safeFormatTime(todayAttendance.checkInTime)}
+                      </p>
+                    )}
+
+                    {todayAttendance?.checkOutTime && safeFormatTime(todayAttendance.checkOutTime) && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        Clocked out at: {safeFormatTime(todayAttendance.checkOutTime)}
+                      </p>
+                    )}
+
+                    {/* No checkin yet */}
+                    {!todayAttendance?.checkInTime && !todayAttendance?.checkOutTime && (
+                      <>
+                        <p className="text-sm text-red-500 mb-2">
+                          Please check in before 10:00 AM
+                        </p>
+                        <Button
+                          onClick={handleCheckIn}
+                          className="w-full bg-blue-600 text-white"
+                        >
+                          Clock in
+                        </Button>
+                      </>
+                    )}
+
+                    {/* Checked-in but not checked-out */}
+                    {todayAttendance?.checkInTime &&
+                      !todayAttendance?.checkOutTime && (
+                        <Button
+                          onClick={handleCheckOut}
+                          className="w-full bg-blue-600 text-white"
+                        >
+                          Clock out
+                        </Button>
+                      )}
+
+                    {/* Already done */}
+                    {todayAttendance?.checkInTime &&
+                      todayAttendance?.checkOutTime && (
+                        <Button
+                          disabled
+                          className="w-full bg-gray-400 text-white cursor-not-allowed"
+                        >
+                          You're done for today
+                        </Button>
+                      )}
                   </>
-                )}
-
-              {todayAttendance?.checkInTime &&
-                !todayAttendance?.checkOutTime && (
-                  <Button
-                    onClick={handleCheckOut}
-                    className="w-full bg-blue-600 text-white"
-                  >
-                    Clock out
-                  </Button>
-                )}
-
-              {todayAttendance?.checkInTime &&
-                todayAttendance?.checkOutTime && (
-                  <Button
-                    disabled
-                    className="w-full bg-gray-400 text-white cursor-not-allowed"
-                  >
-                    You're done for today
-                  </Button>
-                )}
+                );
+              })()}
             </CardContent>
           </Card>
 

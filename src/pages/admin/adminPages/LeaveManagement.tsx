@@ -9,6 +9,9 @@ import Sidebar from "../../../components/SidebarComponent";
 import RejectLeaveRequestModal from "../../employee/modals/RejectLeaveRequest";
 import { useLocation } from "react-router-dom";
 import { ILeaveRequest } from "../../../utils/Interfaces/interfaces";
+import { AxiosError } from "axios";
+import { calculateWorkingDays } from "../../../utils/calculateWorkingDays";
+import { fetchHolidays } from "../../../services/user/userService";
 
 
 const LeaveManagementPage = () => {
@@ -25,16 +28,18 @@ const LeaveManagementPage = () => {
     const fetchLeaveRequests = async () => {
         try {
             const data = await getAllLeaveRequestsService(currentPage, rowsPerPage, statusFilter === "All" ? "" : statusFilter);
-            const updatedLeaveRequests = (data.leaveRequests || []).map((request: ILeaveRequest) => {
-                const startDate = new Date(request.startDate);
-                const endDate = new Date(request.endDate);
+            const holidays = await fetchHolidays(new Date().getFullYear(), "IN");
+            const updatedLeaveRequests = (data.leaveRequests || []).map(
+                (request: ILeaveRequest) => {
 
-                const timeDifference = endDate.getTime() - startDate.getTime();
+                    const startDate = new Date(request.startDate);
+                    const endDate = new Date(request.endDate);
 
-                const days = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
+                    const workingDays = calculateWorkingDays(startDate, endDate, holidays);
 
-                return { ...request, days: days };
-            });
+                    return { ...request, days: workingDays };
+                }
+            );
             console.log(updatedLeaveRequests)
             setLeaveRequests(updatedLeaveRequests || []);
             setTotalPages(data.totalPages)
@@ -58,7 +63,7 @@ const LeaveManagementPage = () => {
             enqueueSnackbar("Leave request approved successfully", { variant: "success" });
         } catch (error) {
             console.error("Error approving leave request:", error);
-            enqueueSnackbar("Failed to approve leave request", { variant: "error" });
+            enqueueSnackbar((error instanceof AxiosError) ? error?.response?.data.message : "error in approving", { variant: "error" });
         }
     };
 

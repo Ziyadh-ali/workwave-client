@@ -38,10 +38,12 @@ const LeavePage = () => {
   const { employee } = useSelector((state: RootState) => state.employee);
   const { sendLeaveRequestApplied } = useSocket();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const rowsPerPage = 3;
+
 
   const fetchLeaveHistory = async () => {
     if (employee?._id) {
@@ -49,13 +51,21 @@ const LeavePage = () => {
         employee._id,
         currentPage,
         rowsPerPage,
-        searchTerm,
+        debouncedSearch,
         statusFilter === "All" ? "" : statusFilter
       );
       setLeaveHistory(response.leaveRequests);
       setTotalPages(response.totalPages);
     }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     const fethchLeaveBalance = async () => {
@@ -68,8 +78,7 @@ const LeavePage = () => {
     fetchLeaveHistory();
 
     //eslint-disable-next-line
-  }, [employee?._id, currentPage, searchTerm, statusFilter, location]);
-
+  }, [employee?._id, currentPage, debouncedSearch, statusFilter, location]);
 
   const handleLeaveAdd = async (data: LeaveRequest) => {
     const newData = { ...data, employeeId: employee?._id };
@@ -171,7 +180,7 @@ const LeavePage = () => {
     },
     {
       header: "Actions",
-      accessor: (row: ILeaveRequest) => {   
+      accessor: (row: ILeaveRequest) => {
         if (row.status === "Pending") {
           return (
             <Button

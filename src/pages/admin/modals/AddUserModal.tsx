@@ -8,17 +8,7 @@ import { useFormik } from "formik"
 import { addUserSchema } from "../../../utils/addUser.validator"
 import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-
-interface AddUserModalProps {
-  onAddUser: (userData: {
-    fullName: string
-    email: string
-    role: string
-    department: string
-    password: string
-    salary: number
-  }) => void
-}
+import { AddUserModalProps } from "../../../utils/Interfaces/interfaces"
 
 const AddUserModal = ({ onAddUser }: AddUserModalProps) => {
   const [isOpen, setIsOpen] = useState(false)

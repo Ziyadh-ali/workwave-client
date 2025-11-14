@@ -38,7 +38,6 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { employee } = useSelector((state: RootState) => state.employee);
-    const [searchQuery, setSearchQuery] = useState("");
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [faqs, setFaqs] = useState<FAQCategory[]>([]);
@@ -51,14 +50,17 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
     const [myQuestions, setMyQuestions] = useState<IQuestion[]>([]);
     const [userQuestions, setUserQuestions] = useState<IQuestion[]>([]);
     const [questionToAnswer, setQuestionToAnswer] = useState<IQuestion | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
 
     useEffect(() => {
         const fetchFaqs = async () => {
             let response
             if (role === "admin") {
-                response = await adminGetFaqService(searchQuery);
+                response = await adminGetFaqService(debouncedSearch);
             } else {
-                response = await getFaqService(searchQuery);
+                response = await getFaqService(debouncedSearch);
             }
             setFaqs(response.faqs);
         };
@@ -88,7 +90,17 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
         fetchFaqs();
         fetchMyQuestions();
         fetchUserQuestions();
-    }, [searchQuery, location , employee?._id , role]);
+    }, [debouncedSearch, location, employee?._id, role]);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        }, 500); // 500ms debounce
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchQuery]);
 
     const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) return text;
@@ -124,7 +136,8 @@ const HelpCenterPage: React.FC<HelpCenterPageProps> = ({ role }) => {
 
     const handleEditFaq = async (id: string, faqData: FAQCategory) => {
         if (!id) return;
-        role === "admin" ? await adminEditFaqService(id, faqData) :await editFaqService(id, faqData);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        role === "admin" ? await adminEditFaqService(id, faqData) : await editFaqService(id, faqData);
         const response = role === "admin" ? await adminGetFaqService(searchQuery) : await getFaqService(searchQuery);
         setFaqs(response.faqs);
         navigate(role === "employee" ? "/help-desk" : "/admin/help");

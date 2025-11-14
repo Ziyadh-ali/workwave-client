@@ -94,7 +94,7 @@ const AdminAttendancePage = () => {
                     itemsPerPage
                 );
                 const safeData = Array.isArray(res.attendances?.data) ? res.attendances.data : [];
-                console.log("Safe Data", safeData)
+                console.log("Fetched attendance data:", safeData);
                 setAttendanceData(safeData);
                 setTotal(res.attendances?.total || 0);
             } catch (err) {
@@ -159,11 +159,7 @@ const AdminAttendancePage = () => {
                         : item
                 )
             );
-            setEditedStatus((prev) => {
-                const newState = { ...prev };
-                delete newState[id];
-                return newState;
-            });
+            setEditedStatus((prev) => { const newState = { ...prev }; delete newState[id]; return newState; });
         } catch (error) {
             console.error("Failed to update status:", error);
             enqueueSnackbar(
@@ -203,15 +199,14 @@ const AdminAttendancePage = () => {
 
     const totalPages = Math.ceil(total / itemsPerPage);
 
-    const formatTimeString = (value?: string | null): string => {
+    const formatTimeString = (value?: string | null) => {
         if (!value) return "";
-        const parsedUTC = new Date(value);
-        if (isNaN(parsedUTC.getTime())) return "";
 
-        // Convert to local time
-        const localDate = new Date(parsedUTC.getTime() + parsedUTC.getTimezoneOffset() * 60000);
+        if (/^\d{2}:\d{2}$/.test(value)) {
+            return value;
+        }
 
-        return format(localDate, "HH:mm");
+        return value.substring(11, 16);
     };
 
     return (
