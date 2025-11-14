@@ -473,10 +473,15 @@ const Chat = () => {
         });
     };
 
+    const buildProfilePicUrl = (id: string, version?: string) => {
+        if (!version) return ""; // fallback will show
+
+        return `https://res.cloudinary.com/dr0iflvfs/image/upload/v${version}/user_profiles/employees/${id}.jpg?timestamp=${Date.now()}`;
+    };
+
     const getAvatarFallback = (chat: ChatRoom) => {
-        if (chat.profilePic) return chat.profilePic;
         if (chat.name) return chat.name.charAt(0).toUpperCase();
-        return 'U';
+        return "U";
     };
 
     const handleCreateGroupSubmit = async (values: GroupFormValues) => {
@@ -559,7 +564,10 @@ const Chat = () => {
                                             <div className="flex items-center space-x-3">
                                                 <div className="relative">
                                                     <Avatar className="w-12 h-12">
-                                                        <AvatarImage src="" />
+                                                        <AvatarImage
+                                                            src={buildProfilePicUrl(chat.id, chat.profilePic)}
+                                                            onError={(e) => (e.currentTarget.src = "")}
+                                                        />
                                                         <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
                                                             {getAvatarFallback(chat)}
                                                         </AvatarFallback>
@@ -649,7 +657,10 @@ const Chat = () => {
                                 <div className="flex items-center space-x-3">
                                     <div className="relative">
                                         <Avatar className="w-12 h-12">
-                                            <AvatarImage src={chat.profilePic || ""} />
+                                            <AvatarImage
+                                                src={buildProfilePicUrl(chat.id, chat.profilePic)}
+                                                onError={(e) => (e.currentTarget.src = "")}
+                                            />
                                             <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
                                                 {getAvatarFallback(chat)}
                                             </AvatarFallback>
@@ -694,7 +705,10 @@ const Chat = () => {
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <Avatar className="w-10 h-10">
-                            <AvatarImage src={activeRoom.profilePic || ""} />
+                            <AvatarImage
+                                src={buildProfilePicUrl(activeRoom.id, activeRoom.profilePic)}
+                                onError={(e) => (e.currentTarget.src = "")}
+                            />
                             <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
                                 {getAvatarFallback(activeRoom)}
                             </AvatarFallback>
@@ -755,7 +769,7 @@ const Chat = () => {
                                             <Avatar className="w-8 h-8 ml-2">
                                                 {message.sender.profilePic && (
                                                     <img
-                                                        src={message.sender.profilePic}
+                                                        src={buildProfilePicUrl(message.sender._id, message.sender.profilePic)}
                                                         alt={message.sender.fullName}
                                                         className="w-full h-full object-cover rounded-full"
                                                     />
