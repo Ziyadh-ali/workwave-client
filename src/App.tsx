@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import AdminLogin from "./pages/admin/adminPages/AdminLogin"
 import AdminDashBoard from "./pages/admin/adminPages/AdminDashBoard"
 import AdminProfile from "./pages/admin/adminPages/AdminProfile"
@@ -34,94 +34,94 @@ import PayrollReport from "./pages/admin/adminPages/AdminReportPage"
 
 function App() {
   const { employee } = useSelector((state: RootState) => state.employee);
-  const {admin} = useSelector((state : RootState)=>state.admin)
+  const { admin } = useSelector((state: RootState) => state.admin)
   return (
     <>
-    <SocketProvider userId={employee?._id || admin?._id || ""}>
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Routes>
-          <Route path="/">
+      <SocketProvider userId={employee?._id || admin?._id || ""}>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Routes>
+            <Route path="/">
+              <Route index element={<Navigate to="/login" replace />} />
+              <Route element={<EmployeePublic />}>
 
-            <Route element={<EmployeePublic />}>
+                <Route path="login" element={<EmployeeLogin />} />
 
-              <Route path="login" element={<EmployeeLogin />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              </Route>
 
-            </Route>
+              <Route element={<EmployeeProtect />}>
 
-            <Route element={<EmployeeProtect />}>
+                <Route path="dashboard" element={<EmployeeDashBoard />} />
 
-              <Route path="dashboard" element={<EmployeeDashBoard />} />
+                <Route path="profile/:id" element={<EditProfilePage />} />
 
-              <Route path="profile/:id" element={<EditProfilePage />} />
+                <Route path="profile" element={<EmployeeProfilePage />} />
 
-              <Route path="profile" element={<EmployeeProfilePage />} />
+                <Route path="leave" element={<LeavePage />} />
 
-              <Route path="leave" element={<LeavePage />} />
+                <Route path="attendance" element={<AttendancePage />} />
 
-              <Route path="attendance" element={<AttendancePage />} />
-
-              <Route path="meeting" element={<MeetingPage />} />
+                <Route path="meeting" element={<MeetingPage />} />
 
 
-              <Route path="messages" element={<ChatPage />} />
+                <Route path="messages" element={<ChatPage />} />
 
-              <Route path="help-desk" element={<EmployeeHelpCenterPage />} />
+                <Route path="help-desk" element={<EmployeeHelpCenterPage />} />
 
-              <Route path="developers/developers-list" element={<ManagerDeveloperManagement />} />
+                <Route path="developers/developers-list" element={<ManagerDeveloperManagement />} />
 
-              <Route path="developers/leave" element={<ManagerLeaveManagementPage />} />
+                <Route path="developers/leave" element={<ManagerLeaveManagementPage />} />
 
-              
 
-              <Route path="payslip" element={<PayslipPage />} />
 
-            </Route>
+                <Route path="payslip" element={<PayslipPage />} />
 
-          </Route>
-
-          <Route path="/admin">
-
-            <Route element={<AdminPublic />}>
-
-              <Route path="login" element={<AdminLogin />} />
+              </Route>
 
             </Route>
 
-            <Route element={<AdminProtect />}>
+            <Route path="/admin">
 
-              <Route path="dashboard" element={<AdminDashBoard />} />
+              <Route element={<AdminPublic />}>
 
-              <Route path="profile" element={<AdminProfile />} />
+                <Route path="login" element={<AdminLogin />} />
 
-              <Route path="users" element={<UserManagement />} />
+              </Route>
 
-              <Route path="users/:userId" element={<UserDetails />} />
+              <Route element={<AdminProtect />}>
 
-              <Route path="users/:userId/edit" element={<AdminEditUserPage />} />
+                <Route path="dashboard" element={<AdminDashBoard />} />
 
-              <Route path="leave/types" element={<LeaveTypeManagementPage />} />
+                <Route path="profile" element={<AdminProfile />} />
 
-              <Route path="leave/requests" element={<LeaveManagementPage />} />
+                <Route path="users" element={<UserManagement />} />
 
-              <Route path="help" element={<AdminHelpCenterPage />} />
+                <Route path="users/:userId" element={<UserDetails />} />
 
-              <Route path="attendance" element={<AdminAttendancePage />} />
+                <Route path="users/:userId/edit" element={<AdminEditUserPage />} />
 
-              <Route path="attendance/summary" element={<MonthlyAttendanceSummaryPage />} />
+                <Route path="leave/types" element={<LeaveTypeManagementPage />} />
 
-              <Route path="payroll" element={<PayrollManagementPage />} />
+                <Route path="leave/requests" element={<LeaveManagementPage />} />
 
-              <Route path="reports" element={<PayrollReport />} />
+                <Route path="help" element={<AdminHelpCenterPage />} />
+
+                <Route path="attendance" element={<AdminAttendancePage />} />
+
+                <Route path="attendance/summary" element={<MonthlyAttendanceSummaryPage />} />
+
+                <Route path="payroll" element={<PayrollManagementPage />} />
+
+                <Route path="reports" element={<PayrollReport />} />
+
+              </Route>
 
             </Route>
 
-          </Route>
+          </Routes>
 
-        </Routes>
-
-      </SnackbarProvider>
+        </SnackbarProvider>
       </SocketProvider>
     </>
   )

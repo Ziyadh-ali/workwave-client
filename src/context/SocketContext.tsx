@@ -232,7 +232,7 @@ export const SocketProvider = ({ children, userId }: { children: React.ReactNode
             console.log("Fetching private messages between:", user1, user2);
             const key = [user1, user2].sort().join('_');
             socketInstance.emit('fetchPrivateMessages', { user1, user2 }, (messages: IMessage[]) => {
-                console.log("messagegeegegege", messages)
+                console.log("Received private messages:", messages);
                 const validMessages = messages.map(msg => ({
                     ...msg,
                     _id: msg._id?.toString(),
@@ -579,7 +579,8 @@ export const SocketProvider = ({ children, userId }: { children: React.ReactNode
 
         const onNewPrivateMessage = async (message: IMessage) => {
             console.log("New private message received:", message);
-            const response = await getProfileDetails(message.sender.toString());
+            const response = await getProfileDetails(message.sender._id.toString());
+            console.log("Sender details fetched:", response);
             const sender = response.details;
             const recipient = message.recipient?.toString();
             if (!recipient) return;

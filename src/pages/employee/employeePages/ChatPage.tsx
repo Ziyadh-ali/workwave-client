@@ -339,16 +339,18 @@ const Chat = () => {
         messages: []
     };
 
-    const isMe = (senderId: string | undefined) => {
-        if (!senderId || !employee?._id) {
-            console.warn(`isMe check failed: senderId=${JSON.stringify(senderId)}, employee._id=${JSON.stringify(employee?._id)}`);
-            return false;
-        }
-        const senderStr = senderId.toString();
-        const employeeIdStr = employee._id.toString();
-        const result = senderStr === employeeIdStr;
-        return result;
-    };
+    const isMe = useCallback(
+        (senderId: string | undefined) => {
+            if (!senderId || !employee?._id) {
+                console.warn(`isMe check failed: senderId=${JSON.stringify(senderId)}, employee._id=${JSON.stringify(employee?._id)}`);
+                return false;
+            }
+            const senderStr = senderId.toString();
+            const employeeIdStr = employee._id.toString();
+            const result = senderStr === employeeIdStr;
+            return result;
+        }, [employee?._id]
+    )
 
     const handleChatSelect = useCallback(async (chatId: string) => {
         setActiveChat(chatId);
@@ -473,11 +475,10 @@ const Chat = () => {
         });
     };
 
-    const buildProfilePicUrl = (id: string, version?: string) => {
-        if (!version) return ""; // fallback will show
-
-        return `https://res.cloudinary.com/dr0iflvfs/image/upload/v${version}/user_profiles/employees/${id}.jpg?timestamp=${Date.now()}`;
-    };
+    const buildProfilePicUrl = useCallback((id: string, version?: string) => {
+        if (!version) return "";
+        return `https://res.cloudinary.com/dr0iflvfs/image/upload/v${version}/user_profiles/employees/${id}.jpg`;
+    }, []);
 
     const getAvatarFallback = (chat: ChatRoom) => {
         if (chat.name) return chat.name.charAt(0).toUpperCase();
