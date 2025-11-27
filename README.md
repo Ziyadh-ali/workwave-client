@@ -11,6 +11,7 @@ WorkWave is a company management portal designed to help administrators manage e
 - [Setup & Installation](#setup--installation)
   - [Backend: workwave-api](#backend-workwave-api)
   - [Frontend: workwave-client](#frontend-workwave-client)
+- [Environment Variables Example](#environment-variables-example)
 - [Running Both Projects Together](#running-both-projects-together)
 - [Usage Tips](#usage-tips)
 
@@ -78,12 +79,12 @@ Two repositories:
    ```
 
 3. **Setup environment variables:**
-   - Create a `.env` file as required (see any example files in the repo).
+   - Create a `.env` file as required (see [Environment Variables Example](#environment-variables-example)).
    - You may need to specify database connection, port, JWT secret, etc.
 
 4. **Run the backend server:**
    ```sh
-   npm start
+   npm run dev
    ```
    or
    ```sh
@@ -116,6 +117,58 @@ Two repositories:
    ```
 
    This will start the app locally, usually on `http://localhost:5173` or as shown in your config.
+
+---
+
+## Environment Variables Example
+
+Below are sample environment variables configurations needed for development. Copy the following to `.env` files as specified:
+
+### Backend: `.env` (in `workwave-api` root):
+
+```ini
+# Backend
+PORT=5000
+NODE_ENV=development
+ALLOWED_ORIGIN=http://localhost:5173
+
+# Database
+MONGO_URI=your_mongodb_connection_string
+
+# JWT Secrets
+ACCESS_SECRET_KEY=your_access_secret
+REFRESH_SECRET_KEY=your_refresh_secret
+RESET_PASSWORD_SECRET_KEY=your_reset_secret
+
+# Token Expiry Times
+ACCESS_EXPIRES_IN=1d
+REFRESH_EXPIRES_IN=2d
+RESET_TOKEN_EXPIRES_IN=2m
+
+# Cloudinary
+CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
+
+# Nodemailer
+EMAIL_USER=your_email_address
+EMAIL_PASS=your_email_app_password
+
+# Calendarific API
+CALENDARIFIC_API_KEY=your_calendarific_api_key
+CALENDARIFIC_URL=https://calendarific.com/api/v2/holidays
+```
+
+### Frontend: `.env` or `.env.local` (in `workwave-client` root):
+
+```ini
+# Front end 
+VITE_API_URL=http://localhost:5000
+
+# Calendarific API (Used for Holidays)
+VITE_CALENDARIFIC_API_KEY=your_calendarific_api_key
+VITE_CALENDARIFIC_URL=https://calendarific.com/api/v2/holidays
+```
 
 ---
 
